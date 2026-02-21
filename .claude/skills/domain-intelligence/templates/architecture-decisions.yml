@@ -1,0 +1,109 @@
+# Domain Intelligence — Project Architecture Decisions
+# Copy this file to your project root and fill in your stack constraints.
+# Claude reads this before making any technical recommendation.
+
+project:
+  name: ""
+  description: ""
+  version: "1.0.0"
+
+platform:
+  targets:
+    - ios
+    - android
+    - web
+  min_versions:
+    ios: "16.0"
+    android_api: 26
+    browsers: ["chrome 90+", "safari 15+", "firefox 90+"]
+
+framework:
+  primary: "" # react-native | flutter | nextjs | nuxt | remix | etc.
+  version: ""
+  runtime: "" # expo | bare | etc.
+
+language:
+  primary: "typescript"
+  version: "5.x"
+  strict_mode: true
+
+database:
+  primary: "" # supabase | firebase | postgresql | mongodb | etc.
+  hosting: "" # cloud | self-hosted
+  orm: "" # prisma | drizzle | typeorm | none
+  realtime: false
+  row_level_security: true
+
+state_management:
+  client: "" # zustand | redux | jotai | riverpod | etc.
+  server: "" # react-query | swr | apollo | etc.
+
+authentication:
+  provider: "" # supabase-auth | firebase-auth | auth0 | clerk | etc.
+  methods:
+    - email-password
+    - google-oauth
+  mfa_required: false
+
+api:
+  style: "rest" # rest | graphql | trpc | grpc
+  versioning: "url" # url (/v1/) | header | query-param
+  naming_convention: "snake_case" # snake_case | camelCase
+  pagination: "cursor" # cursor | offset
+  error_format: "rfc7807" # rfc7807 | custom
+
+approved_libraries:
+  ui:
+    - name: ""
+      version: ""
+      reason: ""
+  networking:
+    - name: ""
+      version: ""
+      reason: ""
+  utilities:
+    - name: ""
+      version: ""
+      reason: ""
+  testing:
+    - name: ""
+      version: ""
+      reason: ""
+
+forbidden_patterns:
+  - pattern: ""
+    reason: ""
+    alternative: ""
+
+deployment:
+  ci_cd: "github-actions" # github-actions | gitlab-ci | circleci
+  hosting:
+    web: "" # vercel | netlify | cloudflare-pages | etc.
+    api: "" # supabase | aws-lambda | railway | etc.
+    mobile_builds: "" # eas-build | fastlane | etc.
+  environments:
+    - name: development
+      branch: develop
+    - name: staging
+      branch: staging
+    - name: production
+      branch: main
+
+privacy:
+  applicable_laws:
+    - "LGPD" # Brazil
+    - "GDPR" # EU
+  data_residency: "" # region requirement
+  dpo_required: true
+
+i18n:
+  default_locale: "en"
+  supported_locales:
+    - "en"
+    - "pt-BR"
+  framework: "" # i18next | react-intl | flutter-intl | etc.
+
+monitoring:
+  error_tracking: "" # sentry | crashlytics | bugsnag
+  analytics: "" # mixpanel | amplitude | posthog | firebase-analytics
+  performance: "" # built-in | datadog | new-relic

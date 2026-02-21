@@ -1,0 +1,125 @@
+# Example: React Native + Supabase Mobile App
+
+project:
+  name: "my-service-app"
+  description: "Service marketplace mobile app for Brazilian market"
+  version: "1.0.0"
+
+platform:
+  targets:
+    - ios
+    - android
+  min_versions:
+    ios: "16.0"
+    android_api: 26
+
+framework:
+  primary: "react-native"
+  version: "0.76"
+  runtime: "expo"
+
+language:
+  primary: "typescript"
+  version: "5.5"
+  strict_mode: true
+
+database:
+  primary: "supabase"
+  hosting: "cloud"
+  orm: "none"
+  realtime: true
+  row_level_security: true
+
+state_management:
+  client: "zustand"
+  server: "react-query"
+
+authentication:
+  provider: "supabase-auth"
+  methods:
+    - email-password
+    - google-oauth
+    - apple-oauth
+  mfa_required: false
+
+api:
+  style: "rest"
+  versioning: "url"
+  naming_convention: "snake_case"
+  pagination: "cursor"
+  error_format: "rfc7807"
+
+approved_libraries:
+  ui:
+    - name: "tamagui"
+      version: "^1.x"
+      reason: "Cross-platform UI with design tokens"
+    - name: "react-native-reanimated"
+      version: "^3.x"
+      reason: "Smooth animations on native thread"
+  networking:
+    - name: "@supabase/supabase-js"
+      version: "^2.x"
+      reason: "Official Supabase client"
+    - name: "@tanstack/react-query"
+      version: "^5.x"
+      reason: "Server state management with caching"
+  utilities:
+    - name: "date-fns"
+      version: "^3.x"
+      reason: "Lightweight date utilities (not moment.js)"
+    - name: "zod"
+      version: "^3.x"
+      reason: "Runtime type validation"
+  testing:
+    - name: "jest"
+      version: "^29.x"
+      reason: "Required for React Native"
+    - name: "maestro"
+      version: "latest"
+      reason: "YAML-based mobile E2E testing"
+
+forbidden_patterns:
+  - pattern: "moment.js"
+    reason: "Large bundle size, deprecated"
+    alternative: "date-fns or Intl.DateTimeFormat"
+  - pattern: "any type in TypeScript"
+    reason: "Defeats type safety"
+    alternative: "unknown + type narrowing"
+  - pattern: "Supabase service_role key on client"
+    reason: "Bypasses RLS — severe security vulnerability"
+    alternative: "Use anon key with RLS policies"
+  - pattern: "Firebase test mode in production"
+    reason: "#1 cause of Firebase data breaches"
+    alternative: "Write proper security rules before deploy"
+
+deployment:
+  ci_cd: "github-actions"
+  hosting:
+    api: "supabase"
+    mobile_builds: "eas-build"
+  environments:
+    - name: development
+      branch: develop
+    - name: staging
+      branch: staging
+    - name: production
+      branch: main
+
+privacy:
+  applicable_laws:
+    - "LGPD"
+  data_residency: "south-america"
+  dpo_required: true
+
+i18n:
+  default_locale: "pt-BR"
+  supported_locales:
+    - "pt-BR"
+    - "en"
+  framework: "i18next"
+
+monitoring:
+  error_tracking: "sentry"
+  analytics: "posthog"
+  performance: "built-in"
