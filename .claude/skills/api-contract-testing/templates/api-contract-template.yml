@@ -1,0 +1,593 @@
+openapi: 3.1.0
+
+info:
+  title: My API
+  version: 1.0.0
+  description: |
+    API description goes here. Include:
+    - Purpose of the API
+    - Authentication requirements
+    - Rate limiting information
+  contact:
+    name: API Support
+    email: api@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production
+  - url: https://staging-api.example.com/v1
+    description: Staging
+  - url: http://localhost:3000/v1
+    description: Local development
+
+tags:
+  - name: Users
+    description: User management endpoints
+  - name: Posts
+    description: Post management endpoints
+  - name: Auth
+    description: Authentication endpoints
+
+paths:
+  # Authentication
+  /auth/register:
+    post:
+      summary: Register new user
+      operationId: registerUser
+      tags: [Auth]
+      security: []  # No auth required
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              john:
+                value:
+                  email: john@example.com
+                  password: SecurePassword123!
+                  name: John Doe
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              examples:
+                success:
+                  value:
+                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    user:
+                      id: 550e8400-e29b-41d4-a716-446655440000
+                      email: john@example.com
+                      name: John Doe
+                      createdAt: '2026-02-21T12:00:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Email already registered
+
+  /auth/login:
+    post:
+      summary: Login with email and password
+      operationId: login
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Users
+  /users:
+    get:
+      summary: List users
+      operationId: listUsers
+      tags: [Users]
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [admin, user, moderator]
+          description: Filter by role
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUsers'
+              examples:
+                users:
+                  value:
+                    data:
+                      - id: 550e8400-e29b-41d4-a716-446655440000
+                        email: john@example.com
+                        name: John Doe
+                        role: user
+                        createdAt: '2026-02-21T12:00:00Z'
+                      - id: 6ba7b810-9dad-11d1-80b4-00c04fd430c8
+                        email: jane@example.com
+                        name: Jane Smith
+                        role: admin
+                        createdAt: '2026-02-20T10:30:00Z'
+                    pagination:
+                      page: 1
+                      limit: 20
+                      total: 100
+                      totalPages: 5
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: Create user (admin only)
+      operationId: createUser
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /users/{id}:
+    parameters:
+      - $ref: '#/components/parameters/UserIdParam'
+
+    get:
+      summary: Get user by ID
+      operationId: getUserById
+      tags: [Users]
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                john:
+                  value:
+                    id: 550e8400-e29b-41d4-a716-446655440000
+                    email: john@example.com
+                    name: John Doe
+                    role: user
+                    createdAt: '2026-02-21T12:00:00Z'
+                    updatedAt: '2026-02-21T12:00:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      summary: Update user
+      operationId: updateUser
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete user
+      operationId: deleteUser
+      tags: [Users]
+      responses:
+        '204':
+          description: User deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Posts
+  /posts:
+    get:
+      summary: List posts
+      operationId: listPosts
+      tags: [Posts]
+      security: []  # Public endpoint
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: authorId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by author
+      responses:
+        '200':
+          description: List of posts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPosts'
+
+    post:
+      summary: Create post
+      operationId: createPost
+      tags: [Posts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePostRequest'
+      responses:
+        '201':
+          description: Post created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /posts/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      summary: Get post by ID
+      operationId: getPostById
+      tags: [Posts]
+      security: []
+      responses:
+        '200':
+          description: Post details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from /auth/login
+
+  parameters:
+    UserIdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: User ID
+
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: Page number
+
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+      description: Items per page
+
+  schemas:
+    # Auth Schemas
+    RegisterRequest:
+      type: object
+      required: [email, password, name]
+      properties:
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        password:
+          type: string
+          minLength: 8
+          format: password
+          example: SecurePassword123!
+        name:
+          type: string
+          minLength: 1
+          example: John Doe
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+          description: JWT token
+        user:
+          $ref: '#/components/schemas/User'
+
+    # User Schemas
+    User:
+      type: object
+      required: [id, email, name, role, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        name:
+          type: string
+          example: John Doe
+        role:
+          type: string
+          enum: [admin, user, moderator]
+          default: user
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateUserRequest:
+      type: object
+      required: [email, password, name]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+          format: password
+        name:
+          type: string
+          minLength: 1
+        role:
+          type: string
+          enum: [admin, user, moderator]
+          default: user
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        role:
+          type: string
+          enum: [admin, user, moderator]
+
+    PaginatedUsers:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    # Post Schemas
+    Post:
+      type: object
+      required: [id, title, content, authorId, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: My First Post
+        content:
+          type: string
+          example: This is the post content...
+        authorId:
+          type: string
+          format: uuid
+        author:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreatePostRequest:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        content:
+          type: string
+          minLength: 1
+
+    PaginatedPosts:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Post'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    # Common Schemas
+    Pagination:
+      type: object
+      required: [page, limit, total, totalPages]
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          example: 1
+        limit:
+          type: integer
+          minimum: 1
+          example: 20
+        total:
+          type: integer
+          minimum: 0
+          example: 100
+        totalPages:
+          type: integer
+          minimum: 0
+          example: 5
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          description: Human-readable error message
+          example: Validation failed
+        details:
+          type: array
+          description: Detailed validation errors (optional)
+          items:
+            type: object
+            required: [field, message]
+            properties:
+              field:
+                type: string
+                example: email
+              message:
+                type: string
+                example: Invalid email format
+
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            validation:
+              value:
+                error: Validation failed
+                details:
+                  - field: email
+                    message: Invalid email format
+                  - field: password
+                    message: Password must be at least 8 characters
+
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Authentication required
+
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Forbidden
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Resource not found
+
+security:
+  - bearerAuth: []
