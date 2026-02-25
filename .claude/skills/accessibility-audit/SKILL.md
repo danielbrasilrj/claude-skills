@@ -1,10 +1,6 @@
 ---
 name: accessibility-audit
-description: |
-  Audits and fixes accessibility issues in mobile and web apps. Covers screen reader compatibility,
-  color contrast verification, touch target sizes, and WCAG 2.1 AA compliance. Includes automated
-  testing setup (axe-core, Pa11y, Lighthouse CI) and manual testing procedures. Use when auditing
-  accessibility, fixing a11y issues, setting up automated a11y testing, or ensuring WCAG compliance.
+description: Audits and fixes accessibility issues (WCAG 2.1 AA). Covers screen readers, contrast, touch targets, and automated a11y testing setup.
 ---
 
 ## Purpose
@@ -45,11 +41,12 @@ npm install --save-dev jest-axe
 ### 2. Color Contrast Check
 
 **WCAG 2.1 AA Requirements:**
+
 - Normal text: **4.5:1** contrast ratio minimum
 - Large text (18pt+ or 14pt+ bold): **3:1** minimum
 - UI components and graphics: **3:1** minimum
 
-Tools: WebAIM Contrast Checker, Chrome DevTools color picker
+Tools: WebAIM Contrast Checker, Chrome DevTools color picker. See [color-contrast-tools.md](color-contrast-tools.md) for full tool list.
 
 ### 3. Touch Target Verification (Mobile)
 
@@ -59,16 +56,17 @@ Tools: WebAIM Contrast Checker, Chrome DevTools color picker
 
 ### 4. Screen Reader Testing
 
-Test with real assistive technology:
+Test with real assistive technology. See [screen-reader-testing.md](screen-reader-testing.md) for detailed procedures per platform.
 
-| Platform | Screen Reader | Shortcut |
-|---|---|---|
-| iOS | VoiceOver | Settings → Accessibility → VoiceOver |
-| Android | TalkBack | Settings → Accessibility → TalkBack |
-| macOS | VoiceOver | Cmd+F5 |
-| Windows | NVDA | Free download from nvaccess.org |
+| Platform | Screen Reader | Shortcut                             |
+| -------- | ------------- | ------------------------------------ |
+| iOS      | VoiceOver     | Settings → Accessibility → VoiceOver |
+| Android  | TalkBack      | Settings → Accessibility → TalkBack  |
+| macOS    | VoiceOver     | Cmd+F5                               |
+| Windows  | NVDA          | Free download from nvaccess.org      |
 
 **Verify:**
+
 - [ ] All interactive elements are reachable and announced
 - [ ] Images have meaningful alt text (decorative = `alt=""`)
 - [ ] Headings follow logical hierarchy (h1 → h2 → h3)
@@ -91,6 +89,8 @@ Test with real assistive technology:
 - [ ] Single-pointer alternatives for multi-touch gestures (2.5.1)
 - [ ] Motion-triggered actions have alternatives (2.5.4)
 
+See [mobile-accessibility.md](mobile-accessibility.md) for iOS, Android, and React Native implementation details.
+
 ## Templates
 
 - `templates/a11y-audit-checklist.md` — Full WCAG 2.1 AA checklist
@@ -101,18 +101,26 @@ Test with real assistive technology:
 
 ## Chaining
 
-| Chain With | Purpose |
-|---|---|
-| `code-review` | Include a11y in code review checklist |
-| `figma-handoff` | Verify designs meet a11y requirements |
-| `ci-cd-pipeline` | Add automated a11y testing to pipeline |
-| `testing-strategy` | Include a11y tests in test plan |
+| Chain With         | Purpose                                |
+| ------------------ | -------------------------------------- |
+| `code-review`      | Include a11y in code review checklist  |
+| `figma-handoff`    | Verify designs meet a11y requirements  |
+| `ci-cd-pipeline`   | Add automated a11y testing to pipeline |
+| `testing-strategy` | Include a11y tests in test plan        |
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---|---|
-| Too many automated findings | Prioritize: focus indicators → contrast → alt text → ARIA |
-| False positives from tools | Verify manually; automated tools over-flag edge cases |
-| Custom components not accessible | Use native semantics; add ARIA only when native isn't sufficient |
+| Problem                                      | Solution                                                          |
+| -------------------------------------------- | ----------------------------------------------------------------- |
+| Too many automated findings                  | Prioritize: focus indicators → contrast → alt text → ARIA         |
+| False positives from tools                   | Verify manually; automated tools over-flag edge cases             |
+| Custom components not accessible             | Use native semantics; add ARIA only when native isn't sufficient  |
 | Color contrast fails but design team resists | Show WCAG legal requirements; propose alternatives that meet both |
+
+## References
+
+- [wcag-checklist.md](wcag-checklist.md) — Full WCAG 2.1 AA checklist organized by POUR principles with code examples
+- [aria-patterns.md](aria-patterns.md) — Common ARIA roles, dialog, accordion, and tabs patterns
+- [screen-reader-testing.md](screen-reader-testing.md) — VoiceOver, TalkBack, and NVDA testing procedures and shortcuts
+- [color-contrast-tools.md](color-contrast-tools.md) — Browser DevTools, online tools, and design tool plugins for contrast checking
+- [mobile-accessibility.md](mobile-accessibility.md) — iOS, Android, and React Native accessibility implementation

@@ -1,10 +1,6 @@
 ---
 name: social-media-content
-description: >
-  Creates multi-platform social media content for Instagram, TikTok, WhatsApp Business,
-  and Google Business Profile. Use when building content calendars, drafting posts,
-  writing video scripts, generating AI image prompts, or ensuring GDPR/LGPD privacy
-  compliance for social campaigns. i18n-ready with locale-aware templates.
+description: Multi-platform social content (Instagram, TikTok, WhatsApp, GBP). Content calendars, posts, video scripts. i18n-ready.
 ---
 
 ## Purpose
@@ -38,16 +34,16 @@ Collect the following before generating any content:
 
 ```yaml
 brand:
-  name: ""
-  industry: ""
-  tone: ""  # e.g., professional, casual, playful, authoritative
+  name: ''
+  industry: ''
+  tone: '' # e.g., professional, casual, playful, authoritative
   audience:
-    primary: ""
-    age_range: ""
+    primary: ''
+    age_range: ''
     interests: []
   locales:
-    primary: "en"
-    secondary: "pt-BR"
+    primary: 'en'
+    secondary: 'pt-BR'
   platforms:
     - instagram
     - tiktok
@@ -72,18 +68,18 @@ For each locale and platform:
 
 Weekly cadence recommendation:
 
-| Day       | Instagram        | TikTok          | WhatsApp Business | GBP           |
-|-----------|------------------|-----------------|-------------------|---------------|
-| Monday    | Carousel (edu)   | Script (edu)    | —                 | Update        |
-| Tuesday   | Story (BTS)      | —               | —                 | —             |
-| Wednesday | Reel (promo)     | Script (promo)  | Broadcast (promo) | Offer         |
-| Thursday  | Carousel (social)| Script (BTS)    | —                 | —             |
-| Friday    | Reel (community) | Script (community)| —              | Event         |
-| Saturday  | Story (testimonial)| —             | —                 | —             |
+| Day       | Instagram           | TikTok             | WhatsApp Business | GBP    |
+| --------- | ------------------- | ------------------ | ----------------- | ------ |
+| Monday    | Carousel (edu)      | Script (edu)       | —                 | Update |
+| Tuesday   | Story (BTS)         | —                  | —                 | —      |
+| Wednesday | Reel (promo)        | Script (promo)     | Broadcast (promo) | Offer  |
+| Thursday  | Carousel (social)   | Script (BTS)       | —                 | —      |
+| Friday    | Reel (community)    | Script (community) | —                 | Event  |
+| Saturday  | Story (testimonial) | —                  | —                 | —      |
 
 ### 3. Generate Platform Content
 
-Use the templates in `templates/` for each platform:
+Use the templates in `templates/` for each platform. See [platform-specs.md](platform-specs.md) for detailed format specs, character limits, and best practices per platform.
 
 - `templates/instagram-post.md` — carousels, reels, stories
 - `templates/tiktok-script.md` — short-form video scripts
@@ -92,25 +88,25 @@ Use the templates in `templates/` for each platform:
 
 ### 4. AI Image Prompt Generation
 
-For each visual content piece, generate a structured image prompt:
+For each visual content piece, generate a structured image prompt. See [ai-image-prompts.md](ai-image-prompts.md) for style guides and platform-specific image specs.
 
 ```yaml
 image_prompt:
-  platform: "instagram"
-  format: "carousel_slide"  # carousel_slide | reel_cover | story | post
-  style: "flat illustration"  # photography | flat illustration | 3d render | watercolor
-  subject: "person using laptop in a cozy cafe"
-  mood: "warm, inviting, productive"
-  color_palette: ["#F5A623", "#4A90D9", "#FFFFFF"]
-  text_overlay: "5 Tips for Remote Work"
-  aspect_ratio: "1:1"  # 1:1 | 4:5 | 9:16 | 16:9
-  negative_prompts: ["text", "watermark", "low quality"]
-  locale_notes: "If pt-BR, adapt text overlay to Portuguese"
+  platform: 'instagram'
+  format: 'carousel_slide' # carousel_slide | reel_cover | story | post
+  style: 'flat illustration' # photography | flat illustration | 3d render | watercolor
+  subject: 'person using laptop in a cozy cafe'
+  mood: 'warm, inviting, productive'
+  color_palette: ['#F5A623', '#4A90D9', '#FFFFFF']
+  text_overlay: '5 Tips for Remote Work'
+  aspect_ratio: '1:1' # 1:1 | 4:5 | 9:16 | 16:9
+  negative_prompts: ['text', 'watermark', 'low quality']
+  locale_notes: 'If pt-BR, adapt text overlay to Portuguese'
 ```
 
 ### 5. Privacy Compliance Check
 
-Before publishing, run every piece through the checklist at `templates/privacy-compliance-checklist.md`. Key rules:
+Before publishing, run every piece through the checklist at `templates/privacy-compliance-checklist.md`. See [privacy-compliance.md](privacy-compliance.md) for GDPR/LGPD deep reference and platform-specific privacy rules. Key rules:
 
 - **GDPR (EU)**: explicit opt-in for data collection, right to erasure, DPO contact visible
 - **LGPD (Brazil)**: explicit consent, 15-day DSAR response window, legal basis documented
@@ -121,7 +117,7 @@ Before publishing, run every piece through the checklist at `templates/privacy-c
 
 ### 6. Localization Workflow
 
-For each content piece, follow this progression:
+For each content piece, follow this progression. See [localization.md](localization.md) for locale-specific considerations and transcreation examples.
 
 1. **Translation**: literal language conversion
 2. **Localization**: adapt dates, currency, measurements, cultural references
@@ -133,13 +129,13 @@ Always produce content in all configured locales simultaneously, not as an after
 
 All templates are in the `templates/` directory:
 
-| Template | Purpose |
-|----------|---------|
-| `instagram-post.md` | Instagram carousel, reel, story formats |
-| `tiktok-script.md` | TikTok video script with hook-body-CTA |
-| `whatsapp-business.md` | WhatsApp Business approved message templates |
-| `google-business-post.md` | GBP update, offer, and event posts |
-| `privacy-compliance-checklist.md` | GDPR/LGPD compliance audit for content |
+| Template                          | Purpose                                      |
+| --------------------------------- | -------------------------------------------- |
+| `instagram-post.md`               | Instagram carousel, reel, story formats      |
+| `tiktok-script.md`                | TikTok video script with hook-body-CTA       |
+| `whatsapp-business.md`            | WhatsApp Business approved message templates |
+| `google-business-post.md`         | GBP update, offer, and event posts           |
+| `privacy-compliance-checklist.md` | GDPR/LGPD compliance audit for content       |
 
 ## Examples
 
@@ -153,13 +149,22 @@ See `examples/service-business-campaign.md` for a complete multi-platform campai
 - **After**: Use `deep-research` to analyze competitor content strategies
 - **After**: Use `data-analysis` to evaluate campaign performance metrics
 
+## References
+
+- [platform-specs.md](platform-specs.md) — Format specs, character limits, best practices per platform
+- [content-pillars.md](content-pillars.md) — Pillar definitions, ratios, and platform mapping
+- [hashtag-strategy.md](hashtag-strategy.md) — Hashtag tiers and per-platform strategy
+- [privacy-compliance.md](privacy-compliance.md) — GDPR/LGPD deep reference, platform-specific privacy rules
+- [ai-image-prompts.md](ai-image-prompts.md) — Style guides, prompt structure, image specs
+- [localization.md](localization.md) — Locale considerations, transcreation examples (en + pt-BR)
+
 ## Troubleshooting
 
-| Problem | Solution |
-|---------|----------|
-| WhatsApp template rejected by Meta | Check template follows exact variable format `{{1}}`, avoid promotional language in utility templates, submit each language variant separately |
-| Content feels unnatural in pt-BR | Move from translation to transcreation — adapt idioms, use local slang appropriate to tone |
-| Low engagement on Instagram carousels | Lead with a hook slide (question or bold stat), keep to 5-7 slides, end with clear CTA |
-| TikTok script too long | Target 15-30 seconds for maximum retention; cut to one core idea per video |
-| GBP post not showing | Verify business is verified, post is under 1500 chars, no banned keywords |
-| LGPD compliance unclear | Document legal basis for each data processing activity, ensure 15-day DSAR response process exists |
+| Problem                               | Solution                                                                                                                                       |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| WhatsApp template rejected by Meta    | Check template follows exact variable format `{{1}}`, avoid promotional language in utility templates, submit each language variant separately |
+| Content feels unnatural in pt-BR      | Move from translation to transcreation — adapt idioms, use local slang appropriate to tone                                                     |
+| Low engagement on Instagram carousels | Lead with a hook slide (question or bold stat), keep to 5-7 slides, end with clear CTA                                                         |
+| TikTok script too long                | Target 15-30 seconds for maximum retention; cut to one core idea per video                                                                     |
+| GBP post not showing                  | Verify business is verified, post is under 1500 chars, no banned keywords                                                                      |
+| LGPD compliance unclear               | Document legal basis for each data processing activity, ensure 15-day DSAR response process exists                                             |

@@ -1,10 +1,6 @@
 ---
 name: performance-optimization
-description: |
-  Procedures for mobile and web performance profiling, bundle size analysis, image optimization,
-  lazy loading strategies, and database query optimization. Includes Core Web Vitals targets,
-  performance budget templates, and benchmark script patterns. Use when optimizing app performance,
-  reducing bundle size, profiling slow queries, or setting up performance monitoring.
+description: Performance profiling, bundle size analysis, image optimization, lazy loading, and query optimization. Core Web Vitals targets.
 ---
 
 ## Purpose
@@ -45,6 +41,7 @@ npx lighthouse https://app.example.com --output=json --only-categories=performan
 ### 2. Bundle Size Optimization
 
 **Analysis:**
+
 ```bash
 # Vite/Rollup
 npx rollup-plugin-visualizer  # generates treemap
@@ -54,6 +51,7 @@ npx source-map-explorer dist/main.js
 ```
 
 **Optimization techniques:**
+
 1. **Tree shaking** — requires ES Module imports (not CommonJS `require()`)
 2. **Code splitting** — split by route: `React.lazy(() => import('./Page'))`
 3. **Replace heavy libraries** — `date-fns` over `moment`, `lodash/debounce` over full lodash
@@ -85,6 +83,7 @@ EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'test@example.com';
 ```
 
 **Quick wins:**
+
 - Add indexes on WHERE, JOIN, ORDER BY columns
 - Fix N+1 queries (use eager loading / batch)
 - Implement connection pooling (PgBouncer)
@@ -116,18 +115,27 @@ Enforce in CI with `size-limit` or `bundlesize`.
 
 ## Chaining
 
-| Chain With | Purpose |
-|---|---|
-| `ci-cd-pipeline` | Add perf budget checks to CI |
-| `code-review` | Flag perf anti-patterns in review |
-| `database-ops` | Optimize database layer |
-| `data-analysis` | Analyze performance metrics |
+| Chain With       | Purpose                           |
+| ---------------- | --------------------------------- |
+| `ci-cd-pipeline` | Add perf budget checks to CI      |
+| `code-review`    | Flag perf anti-patterns in review |
+| `database-ops`   | Optimize database layer           |
+| `data-analysis`  | Analyze performance metrics       |
+
+## References
+
+- [core-web-vitals.md](core-web-vitals.md) -- LCP, INP, CLS deep dive with causes, solutions, and checklists
+- [react-profiling.md](react-profiling.md) -- React DevTools profiler, common perf issues, React Native profiling
+- [bundle-analysis.md](bundle-analysis.md) -- Tools (Vite/Webpack/source-map-explorer), optimization techniques, size budgets
+- [image-optimization.md](image-optimization.md) -- Format comparison, responsive images, lazy loading, compression, CDN
+- [caching-strategies.md](caching-strategies.md) -- HTTP headers, service worker, React Query, Redis caching
+- [mobile-performance.md](mobile-performance.md) -- Hermes, FlatList, FastImage, Android/iOS-specific optimizations
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---|---|
-| Bundle too large but can't find cause | Use source-map-explorer for treemap visualization |
-| Tree shaking not working | Check for CommonJS imports; ensure ES module syntax |
-| LCP still slow after optimization | Check server response time; consider CDN |
-| Mobile-specific slowness | Profile on real device, not emulator; check memory usage |
+| Problem                               | Solution                                                 |
+| ------------------------------------- | -------------------------------------------------------- |
+| Bundle too large but can't find cause | Use source-map-explorer for treemap visualization        |
+| Tree shaking not working              | Check for CommonJS imports; ensure ES module syntax      |
+| LCP still slow after optimization     | Check server response time; consider CDN                 |
+| Mobile-specific slowness              | Profile on real device, not emulator; check memory usage |

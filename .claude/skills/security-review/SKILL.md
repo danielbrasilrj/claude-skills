@@ -43,20 +43,20 @@ Audit Scope Checklist:
 
 ### 2. OWASP Mobile Top 10 2024 Review
 
-Evaluate each category systematically.
+Evaluate each category systematically. See [owasp-mobile-top10.md](owasp-mobile-top10.md) for detailed guidance per category.
 
-| # | Category | Key Checks |
-|---|----------|------------|
-| M1 | Improper Credential Usage | Hardcoded keys, credentials in code/logs |
-| M2 | Inadequate Supply Chain Security | SDK versions, dependency vulnerabilities |
-| M3 | Insecure Authentication/Authorization | Token validation, session management |
-| M4 | Insufficient Input/Output Validation | Injection, XSS, deep link validation |
-| M5 | Insecure Communication | TLS 1.2+ enforcement, certificate pinning |
-| M6 | Inadequate Privacy Controls | Data minimization, consent, retention |
-| M7 | Insufficient Binary Protections | Obfuscation, anti-tampering, debug flags |
-| M8 | Security Misconfiguration | Debug mode, default credentials, permissions |
-| M9 | Insecure Data Storage | Keychain/Keystore usage, plaintext data |
-| M10 | Insufficient Cryptography | AES-256, no deprecated algorithms, key management |
+| #   | Category                              | Key Checks                                        |
+| --- | ------------------------------------- | ------------------------------------------------- |
+| M1  | Improper Credential Usage             | Hardcoded keys, credentials in code/logs          |
+| M2  | Inadequate Supply Chain Security      | SDK versions, dependency vulnerabilities          |
+| M3  | Insecure Authentication/Authorization | Token validation, session management              |
+| M4  | Insufficient Input/Output Validation  | Injection, XSS, deep link validation              |
+| M5  | Insecure Communication                | TLS 1.2+ enforcement, certificate pinning         |
+| M6  | Inadequate Privacy Controls           | Data minimization, consent, retention             |
+| M7  | Insufficient Binary Protections       | Obfuscation, anti-tampering, debug flags          |
+| M8  | Security Misconfiguration             | Debug mode, default credentials, permissions      |
+| M9  | Insecure Data Storage                 | Keychain/Keystore usage, plaintext data           |
+| M10 | Insufficient Cryptography             | AES-256, no deprecated algorithms, key management |
 
 ### 3. Authentication and Authorization Audit
 
@@ -96,9 +96,10 @@ Checks:
 
 ### 5. Privacy Compliance Review
 
-Select applicable regulation(s) and verify requirements.
+Select applicable regulation(s) and verify requirements. See [privacy-regulations.md](privacy-regulations.md) for full deep dive.
 
 **LGPD (Brazil):**
+
 - Legal basis documented for each data processing activity
 - DSAR response within 15 days
 - DPO (Encarregado) appointed and contactable
@@ -106,6 +107,7 @@ Select applicable regulation(s) and verify requirements.
 - Penalties: up to R$50M per violation or 2% of revenue
 
 **GDPR (EU/EEA):**
+
 - Lawful basis for processing documented (Art. 6)
 - Data breach notification within 72 hours to authority
 - Right to erasure (Art. 17) implemented
@@ -113,6 +115,7 @@ Select applicable regulation(s) and verify requirements.
 - Penalties: up to 4% of annual global turnover or EUR 20M
 
 **CCPA (California):**
+
 - "Do Not Sell My Personal Information" link present
 - Consumer request response within 45 days
 - Privacy policy updated within 12 months
@@ -136,11 +139,14 @@ gitleaks detect --source=. --report-path=gitleaks-report.json
 frida -U -f com.app.target -l hooks.js --no-pause
 ```
 
+See [tool-configuration.md](tool-configuration.md) for detailed config files (Semgrep rules, gitleaks TOML, MobSF Docker, Frida scripts).
+
 ### 7. Report Generation
 
 Structure findings using the template at `examples/security-audit-report.md`.
 
 Severity levels:
+
 - **Critical**: Immediate exploitation possible, data breach risk
 - **High**: Significant vulnerability, exploitation requires minimal effort
 - **Medium**: Vulnerability present, exploitation requires specific conditions
@@ -163,12 +169,22 @@ Severity levels:
 - Use **testing-strategy** to add security-focused test cases
 - Use **ci-cd-pipeline** to integrate Semgrep/gitleaks into CI
 
+## References
+
+| File                                                   | Topic                                                   |
+| ------------------------------------------------------ | ------------------------------------------------------- |
+| [owasp-mobile-top10.md](owasp-mobile-top10.md)         | OWASP Mobile Top 10 2024 detailed guidance per category |
+| [privacy-regulations.md](privacy-regulations.md)       | LGPD, GDPR, CCPA deep dive with requirements            |
+| [tool-configuration.md](tool-configuration.md)         | Semgrep, gitleaks, MobSF, Frida config and scripts      |
+| [security-headers.md](security-headers.md)             | HTTP security headers reference                         |
+| [api-security-checklist.md](api-security-checklist.md) | API auth, authz, input, logging checklist               |
+
 ## Troubleshooting
 
-| Problem | Solution |
-|---------|----------|
-| Semgrep too many false positives | Use `--severity ERROR` or custom rule sets |
-| MobSF fails on large APK | Increase Docker memory, try CLI mode |
-| Certificate pinning blocks proxy | Use Frida to bypass pinning during testing |
-| Unclear which regulation applies | Check data subject residency, not company location |
+| Problem                            | Solution                                               |
+| ---------------------------------- | ------------------------------------------------------ |
+| Semgrep too many false positives   | Use `--severity ERROR` or custom rule sets             |
+| MobSF fails on large APK           | Increase Docker memory, try CLI mode                   |
+| Certificate pinning blocks proxy   | Use Frida to bypass pinning during testing             |
+| Unclear which regulation applies   | Check data subject residency, not company location     |
 | Team pushes back on security fixes | Prioritize by severity, provide exploitation scenarios |

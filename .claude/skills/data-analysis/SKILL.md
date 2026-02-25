@@ -1,10 +1,6 @@
 ---
 name: data-analysis
-description: |
-  Python-based data analysis using pandas, matplotlib, and seaborn. Performs CSV/Excel analysis,
-  analytics data interpretation, A/B test statistical significance calculations, and cohort
-  retention analysis. Use when the user needs to analyze data files, calculate statistical
-  significance for experiments, build cohort retention tables, or generate data visualizations.
+description: Python data analysis (pandas, matplotlib). CSV/Excel analysis, A/B test significance, cohort retention, and visualizations.
 ---
 
 ## Purpose
@@ -30,6 +26,8 @@ Data Analysis provides structured procedures for analyzing datasets using Python
 
 ### 1. Data Loading and Exploration
 
+For core principles (reproducibility, data quality, statistical rigor), see [core-principles.md](core-principles.md). For comprehensive loading patterns and cleaning procedures, see [data-loading-and-cleaning.md](data-loading-and-cleaning.md).
+
 ```python
 import pandas as pd
 import numpy as np
@@ -46,6 +44,8 @@ print(f"Missing values:\n{df.isnull().sum()}")
 ```
 
 ### 2. A/B Test Statistical Significance
+
+For expanded test functions (normality checks, bootstrap CIs, sample size calculator), see [statistical-tests.md](statistical-tests.md).
 
 **For conversion rates (proportions):**
 
@@ -126,6 +126,8 @@ def cohort_retention(df, user_col, date_col, activity_col=None):
 
 ### 4. Visualization
 
+For full visualization standards and report generation patterns, see [visualization-and-reporting.md](visualization-and-reporting.md).
+
 ```python
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -139,6 +141,13 @@ plt.ylabel('Cohort')
 plt.savefig('cohort_retention.png', dpi=150, bbox_inches='tight')
 ```
 
+## References
+
+- [core-principles.md](core-principles.md) — Reproducibility, data quality, statistical rigor, required libraries
+- [data-loading-and-cleaning.md](data-loading-and-cleaning.md) — Loading patterns, exploration function, missing values, outlier detection
+- [statistical-tests.md](statistical-tests.md) — Proportion tests, continuous metric tests, sample size calculation, cohort retention
+- [visualization-and-reporting.md](visualization-and-reporting.md) — Heatmaps, distribution plots, notebook conventions, report generation
+
 ## Templates
 
 - `templates/analysis-report.md` — Structured analysis report template
@@ -150,18 +159,18 @@ plt.savefig('cohort_retention.png', dpi=150, bbox_inches='tight')
 
 ## Chaining
 
-| Chain With | Purpose |
-|---|---|
-| `deep-research` | Gather data for analysis |
-| `ab-test-generator` | Design experiments, then analyze results here |
-| `performance-optimization` | Analyze performance metrics |
-| `documentation-generator` | Document analysis methodology |
+| Chain With                 | Purpose                                       |
+| -------------------------- | --------------------------------------------- |
+| `deep-research`            | Gather data for analysis                      |
+| `ab-test-generator`        | Design experiments, then analyze results here |
+| `performance-optimization` | Analyze performance metrics                   |
+| `documentation-generator`  | Document analysis methodology                 |
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---|---|
-| Small sample size warning | Use Mann-Whitney U test or bootstrap methods |
-| Multiple comparisons | Apply Bonferroni correction: `alpha / num_tests` |
-| Non-normal distribution | Use non-parametric tests (Mann-Whitney, permutation) |
-| Missing data | Document missing rate; use dropna() or imputation |
+| Problem                   | Solution                                             |
+| ------------------------- | ---------------------------------------------------- |
+| Small sample size warning | Use Mann-Whitney U test or bootstrap methods         |
+| Multiple comparisons      | Apply Bonferroni correction: `alpha / num_tests`     |
+| Non-normal distribution   | Use non-parametric tests (Mann-Whitney, permutation) |
+| Missing data              | Document missing rate; use dropna() or imputation    |

@@ -30,7 +30,7 @@ Guide the development of applications that target multiple platforms (iOS, Andro
 
 ### 1. Project Structure Setup
 
-Organize code by feature, not by platform. Each feature module contains its own shared logic and platform-specific UI.
+Organize code by feature, not by platform. Each feature module contains its own shared logic and platform-specific UI. See [architecture.md](architecture.md) for the full Shared Core + Native UI pattern and DI setup.
 
 ```
 src/
@@ -77,7 +77,10 @@ export interface AuthRepository {
 
 // features/auth/data/auth.api.ts
 export class AuthApiRepository implements AuthRepository {
-  constructor(private api: HttpClient, private storage: TokenStorage) {}
+  constructor(
+    private api: HttpClient,
+    private storage: TokenStorage,
+  ) {}
 
   async login(email: string, password: string): Promise<User> {
     const response = await this.api.post('/auth/login', { email, password });
@@ -95,7 +98,7 @@ export class AuthApiRepository implements AuthRepository {
 export class LoginUseCase {
   constructor(
     private authRepo: AuthRepository,
-    private analytics: AnalyticsService
+    private analytics: AnalyticsService,
   ) {}
 
   async execute(email: string, password: string): Promise<Result<User>> {
@@ -205,8 +208,7 @@ type Breakpoint = 'mobile' | 'tablet' | 'desktop';
 export function useResponsive() {
   const { width } = useWindowDimensions();
 
-  const breakpoint: Breakpoint =
-    width < 768 ? 'mobile' : width < 1024 ? 'tablet' : 'desktop';
+  const breakpoint: Breakpoint = width < 768 ? 'mobile' : width < 1024 ? 'tablet' : 'desktop';
 
   return {
     breakpoint,
@@ -220,7 +222,7 @@ export function useResponsive() {
 
 ### 7. QA Checklist Execution
 
-Before any release, run through the cross-platform QA checklist (see `templates/cross-platform-checklist.md`). This covers:
+Before any release, run through the cross-platform QA checklist (see `templates/cross-platform-checklist.md`). For platform-specific considerations, see [platform-patterns.md](platform-patterns.md). For targets, see [testing-and-performance.md](testing-and-performance.md). This covers:
 
 - Visual consistency across platforms
 - Navigation behavior per platform conventions
@@ -228,6 +230,13 @@ Before any release, run through the cross-platform QA checklist (see `templates/
 - Performance baselines per platform
 - Accessibility compliance
 - Offline and edge-case scenarios
+
+## References
+
+- [architecture.md](architecture.md) — Shared Core + Native UI pattern, dependency injection, offline-first sync
+- [platform-patterns.md](platform-patterns.md) — iOS, Android, Web considerations and navigation patterns
+- [testing-and-performance.md](testing-and-performance.md) — Testing strategy per platform and performance baselines
+- [monorepo-and-tokens.md](monorepo-and-tokens.md) — Monorepo setup and design token system
 
 ## Templates
 
@@ -239,23 +248,23 @@ Before any release, run through the cross-platform QA checklist (see `templates/
 
 ## Chaining
 
-| Trigger | Target Skill | Purpose |
-|---|---|---|
-| Framework not decided | `domain-intelligence` | Define tech stack before building |
-| API integration needed | `api-contract-testing` | Generate typed clients for shared data layer |
-| Ready to ship | `ci-cd-pipeline` | Build and deploy for all platforms |
-| PR ready for review | `code-review` | Review with cross-platform pillars |
-| Performance concerns | `performance-optimization` | Profile per platform |
-| Accessibility gaps | `accessibility-audit` | WCAG compliance per platform |
+| Trigger                | Target Skill               | Purpose                                      |
+| ---------------------- | -------------------------- | -------------------------------------------- |
+| Framework not decided  | `domain-intelligence`      | Define tech stack before building            |
+| API integration needed | `api-contract-testing`     | Generate typed clients for shared data layer |
+| Ready to ship          | `ci-cd-pipeline`           | Build and deploy for all platforms           |
+| PR ready for review    | `code-review`              | Review with cross-platform pillars           |
+| Performance concerns   | `performance-optimization` | Profile per platform                         |
+| Accessibility gaps     | `accessibility-audit`      | WCAG compliance per platform                 |
 
 ## Troubleshooting
 
-| Problem | Cause | Solution |
-|---|---|---|
-| Platform file not resolving | Incorrect extension | Verify bundler config supports `.native.tsx`, `.web.tsx` etc. |
-| Style differences across platforms | Missing platform normalization | Use a design token system; avoid raw pixel values |
-| Navigation mismatch | Wrong navigator type | Use stack on mobile, flat on web; check Expo Router config |
-| Web bundle too large | Native modules included in web build | Use `Platform.select` or `.web.tsx` overrides to tree-shake |
-| Android keyboard covers input | Missing `KeyboardAvoidingView` | Wrap forms with platform-specific keyboard handling |
-| iOS safe area issues | Missing SafeAreaProvider | Wrap root with `SafeAreaProvider` from `react-native-safe-area-context` |
-| Shared hook crashes on one platform | Platform API not available | Guard with `Platform.OS` check or provide platform-specific implementation |
+| Problem                             | Cause                                | Solution                                                                   |
+| ----------------------------------- | ------------------------------------ | -------------------------------------------------------------------------- |
+| Platform file not resolving         | Incorrect extension                  | Verify bundler config supports `.native.tsx`, `.web.tsx` etc.              |
+| Style differences across platforms  | Missing platform normalization       | Use a design token system; avoid raw pixel values                          |
+| Navigation mismatch                 | Wrong navigator type                 | Use stack on mobile, flat on web; check Expo Router config                 |
+| Web bundle too large                | Native modules included in web build | Use `Platform.select` or `.web.tsx` overrides to tree-shake                |
+| Android keyboard covers input       | Missing `KeyboardAvoidingView`       | Wrap forms with platform-specific keyboard handling                        |
+| iOS safe area issues                | Missing SafeAreaProvider             | Wrap root with `SafeAreaProvider` from `react-native-safe-area-context`    |
+| Shared hook crashes on one platform | Platform API not available           | Guard with `Platform.OS` check or provide platform-specific implementation |

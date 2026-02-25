@@ -1,11 +1,6 @@
 ---
 name: prd-driven-development
-description: |
-  Implements the PRD-first development methodology. Creates comprehensive Product Requirements
-  Documents from feature ideas, breaks PRDs into implementable tasks with dependency ordering,
-  and maintains PRD-to-code traceability. Optimized for AI-assisted development with explicit
-  context sections. Use when starting a new feature, creating requirements from scratch,
-  breaking down a large feature into tasks, or planning implementation phases.
+description: PRD-first development — creates PRDs from feature ideas, breaks into tasks with dependencies, maintains PRD-to-code traceability.
 ---
 
 ## Purpose
@@ -31,6 +26,7 @@ PRD-Driven Development ensures every feature starts with a clear specification b
 ### 1. Gather Context
 
 Before writing the PRD, collect:
+
 - **User problem**: What pain point does this solve?
 - **Business goal**: What metric does this improve?
 - **Constraints**: Timeline, budget, technical limitations
@@ -51,6 +47,7 @@ Use the template in `templates/prd-template.md`. Key sections:
 ### 3. Optimize for AI Consumption
 
 Structure the PRD so Claude can consume it directly:
+
 - Use dependency-ordered phases (foundations first)
 - Make each phase independently testable
 - Include explicit inputs/outputs for each component
@@ -59,6 +56,7 @@ Structure the PRD so Claude can consume it directly:
 ### 4. Break Into Tasks
 
 Use `templates/task-breakdown.md`:
+
 1. Identify implementation phases from the PRD
 2. For each phase, create atomic tasks (< 1 day each)
 3. Define dependencies between tasks
@@ -68,6 +66,7 @@ Use `templates/task-breakdown.md`:
 ### 5. Maintain Traceability
 
 Create a traceability matrix linking:
+
 - PRD section → Task/Issue → PR/Commit → Test
 
 ## Templates
@@ -81,19 +80,26 @@ Create a traceability matrix linking:
 
 ## Chaining
 
-| Chain With | Purpose |
-|---|---|
-| `deep-research` | Research before writing PRD |
-| `sprint-planning` | Convert PRD tasks into sprint backlog |
-| `domain-intelligence` | Check tech constraints |
-| `documentation-generator` | Document the feature after shipping |
-| `testing-strategy` | Plan tests based on acceptance criteria |
+| Chain With                | Purpose                                 |
+| ------------------------- | --------------------------------------- |
+| `deep-research`           | Research before writing PRD             |
+| `sprint-planning`         | Convert PRD tasks into sprint backlog   |
+| `domain-intelligence`     | Check tech constraints                  |
+| `documentation-generator` | Document the feature after shipping     |
+| `testing-strategy`        | Plan tests based on acceptance criteria |
+
+## References
+
+- [prd-structure-standards.md](prd-structure-standards.md) -- Core principles, section templates, acceptance criteria patterns, pitfalls
+- [ai-consumption-optimization.md](ai-consumption-optimization.md) -- AI context sections, dependency graphs, interface specs
+- [stakeholder-alignment.md](stakeholder-alignment.md) -- Pre-PRD checklist, review process, version control
+- [workflow-integration.md](workflow-integration.md) -- PRD-to-code flow, PR description template, further reading
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---|---|
+| Problem                          | Solution                                                 |
+| -------------------------------- | -------------------------------------------------------- |
 | PRD too vague for implementation | Add specific inputs/outputs and Given/When/Then criteria |
-| Scope keeps growing | Enforce Out of Scope section; defer additions to v2 |
-| Tasks too large | Break into subtasks; each should be < 1 day |
-| Stakeholder disagreement | Focus on Problem Statement alignment first |
+| Scope keeps growing              | Enforce Out of Scope section; defer additions to v2      |
+| Tasks too large                  | Break into subtasks; each should be < 1 day              |
+| Stakeholder disagreement         | Focus on Problem Statement alignment first               |

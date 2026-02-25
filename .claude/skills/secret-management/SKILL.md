@@ -1,10 +1,6 @@
 ---
 name: secret-management
-description: |
-  Procedures for managing secrets across environments. Covers .env file conventions, platform
-  secure storage (Keychain, KeyStore, SecureStore), CI/CD secrets (GitHub Secrets, OIDC federation),
-  and secret rotation procedures. Use when setting up environment variables, configuring secure
-  storage for mobile apps, managing CI/CD secrets, or implementing secret rotation policies.
+description: Manages secrets across environments — .env conventions, platform secure storage, CI/CD secrets, and rotation procedures.
 ---
 
 ## Purpose
@@ -42,10 +38,12 @@ STRIPE_SECRET_KEY=sk_live_xxxxx
 ```
 
 **Naming convention:**
+
 - `PUBLIC_*` or `NEXT_PUBLIC_*` — safe for client-side
 - Everything else — server-side only
 
 **File hierarchy:**
+
 ```
 .env                 # Shared defaults (committed, no secrets)
 .env.local           # Local overrides (NOT committed)
@@ -56,18 +54,21 @@ STRIPE_SECRET_KEY=sk_live_xxxxx
 
 ### 2. Platform Secure Storage (Mobile)
 
-| Platform | Storage | Use For |
-|---|---|---|
-| iOS | Keychain (`SecItemAdd`) | Auth tokens, user credentials |
-| Android | KeyStore + EncryptedSharedPreferences | Auth tokens, user credentials |
-| React Native | expo-secure-store | Cross-platform secure storage |
-| Web | httpOnly cookies (server-set) | Session tokens |
+| Platform     | Storage                               | Use For                       |
+| ------------ | ------------------------------------- | ----------------------------- |
+| iOS          | Keychain (`SecItemAdd`)               | Auth tokens, user credentials |
+| Android      | KeyStore + EncryptedSharedPreferences | Auth tokens, user credentials |
+| React Native | expo-secure-store                     | Cross-platform secure storage |
+| Web          | httpOnly cookies (server-set)         | Session tokens                |
 
 **Never store secrets in:** AsyncStorage, SharedPreferences, localStorage, or app bundle.
+
+See [platform-secure-storage.md](platform-secure-storage.md) for full implementation examples (Swift, Kotlin, React Native).
 
 ### 3. CI/CD Secrets
 
 **GitHub Actions:**
+
 ```yaml
 env:
   API_KEY: ${{ secrets.API_KEY }}
@@ -75,6 +76,7 @@ env:
 ```
 
 **OIDC Federation (preferred over stored keys):**
+
 ```yaml
 permissions:
   id-token: write
@@ -103,14 +105,15 @@ repos:
 
 ### 5. Secret Rotation
 
-| Secret Type | Rotation Frequency | Method |
-|---|---|---|
-| Database credentials | 90 days | Vault auto-rotation |
-| API keys | 90 days | Generate new, update, revoke old |
-| JWT signing keys | 6 months | Key pair rotation with overlap |
-| Service account keys | 90 days | OIDC federation (no static keys) |
+| Secret Type          | Rotation Frequency | Method                           |
+| -------------------- | ------------------ | -------------------------------- |
+| Database credentials | 90 days            | Vault auto-rotation              |
+| API keys             | 90 days            | Generate new, update, revoke old |
+| JWT signing keys     | 6 months           | Key pair rotation with overlap   |
+| Service account keys | 90 days            | OIDC federation (no static keys) |
 
 **Rotation procedure:**
+
 1. Generate new secret
 2. Deploy to all consumers
 3. Verify all consumers use new secret
@@ -128,18 +131,30 @@ repos:
 
 ## Chaining
 
-| Chain With | Purpose |
-|---|---|
-| `ci-cd-pipeline` | Configure secrets in CI/CD |
-| `security-review` | Audit for leaked or weak secrets |
-| `domain-intelligence` | Define secret management policy |
-| `database-ops` | Secure database credentials |
+| Chain With            | Purpose                          |
+| --------------------- | -------------------------------- |
+| `ci-cd-pipeline`      | Configure secrets in CI/CD       |
+| `security-review`     | Audit for leaked or weak secrets |
+| `domain-intelligence` | Define secret management policy  |
+| `database-ops`        | Secure database credentials      |
+
+## References
+
+| File                                                     | Topic                                                      |
+| -------------------------------------------------------- | ---------------------------------------------------------- |
+| [vault-patterns.md](vault-patterns.md)                   | HashiCorp Vault setup, KV, dynamic creds, AppRole, Transit |
+| [aws-secrets-manager.md](aws-secrets-manager.md)         | AWS Secrets Manager CRUD, rotation Lambda, SDK integration |
+| [onepassword-cli.md](onepassword-cli.md)                 | 1Password CLI dev workflow and CI/CD integration           |
+| [rotation-automation.md](rotation-automation.md)         | DB and API key rotation scripts with zero-downtime         |
+| [oidc-federation.md](oidc-federation.md)                 | GitHub Actions OIDC to AWS and GCP                         |
+| [scanning-tools.md](scanning-tools.md)                   | gitleaks, truffleHog, detect-secrets comparison            |
+| [platform-secure-storage.md](platform-secure-storage.md) | iOS Keychain, Android KeyStore, expo-secure-store          |
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---|---|
-| Secret committed to git | Rotate immediately; use `git filter-repo` to purge history |
-| CI can't access secrets | Check secret name spelling; PRs from forks can't access secrets |
-| gitleaks false positive | Add to `.gitleaksignore` with justification comment |
-| Env var not available at runtime | Check if it needs to be prefixed (NEXT_PUBLIC_, EXPO_PUBLIC_) |
+| Problem                          | Solution                                                        |
+| -------------------------------- | --------------------------------------------------------------- |
+| Secret committed to git          | Rotate immediately; use `git filter-repo` to purge history      |
+| CI can't access secrets          | Check secret name spelling; PRs from forks can't access secrets |
+| gitleaks false positive          | Add to `.gitleaksignore` with justification comment             |
+| Env var not available at runtime | Check if it needs to be prefixed (NEXT*PUBLIC*, EXPO*PUBLIC*)   |

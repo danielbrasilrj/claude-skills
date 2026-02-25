@@ -1,9 +1,6 @@
 ---
 name: sprint-planning
-description: >
-  Agile sprint planning workflows. Generates sprint backlogs from PRDs,
-  decomposes epics into INVEST-compliant user stories with story points,
-  produces Given/When/Then acceptance criteria, and creates GitHub Issues.
+description: Sprint backlogs from PRDs, INVEST user stories with story points, Given/When/Then acceptance criteria, GitHub Issues.
 ---
 
 # Sprint Planning
@@ -44,7 +41,7 @@ Given an epic or PRD section, decompose it into user stories:
    - **E**stimable -- team can size it with reasonable confidence
    - **S**mall -- fits within a single sprint
    - **T**estable -- has clear pass/fail acceptance criteria
-5. **Split stories** that violate INVEST (see REFERENCE.md for splitting patterns)
+5. **Split stories** that violate INVEST (see [story-splitting.md](story-splitting.md) for splitting patterns)
 
 ### 2. Acceptance Criteria (Given/When/Then)
 
@@ -57,6 +54,7 @@ Then [expected observable outcome]
 ```
 
 Rules:
+
 - Each story MUST have 2-5 acceptance criteria
 - Cover the happy path, at least one edge case, and one error case
 - Keep criteria atomic -- one behavior per criterion
@@ -66,25 +64,26 @@ Rules:
 
 Use modified Fibonacci scale: 1, 2, 3, 5, 8, 13, 21.
 
-| Points | Complexity | Uncertainty | Effort Analogy |
-|--------|-----------|-------------|----------------|
-| 1 | Trivial | None | Config change, copy update |
-| 2 | Low | Minimal | Simple CRUD endpoint |
-| 3 | Moderate | Low | Feature with known pattern |
-| 5 | Medium | Some | New integration, moderate logic |
-| 8 | High | Notable | Cross-cutting concern, new pattern |
-| 13 | Very High | Significant | Major feature, architectural impact |
-| 21 | Extreme | High | Should be split further |
+| Points | Complexity | Uncertainty | Effort Analogy                      |
+| ------ | ---------- | ----------- | ----------------------------------- |
+| 1      | Trivial    | None        | Config change, copy update          |
+| 2      | Low        | Minimal     | Simple CRUD endpoint                |
+| 3      | Moderate   | Low         | Feature with known pattern          |
+| 5      | Medium     | Some        | New integration, moderate logic     |
+| 8      | High       | Notable     | Cross-cutting concern, new pattern  |
+| 13     | Very High  | Significant | Major feature, architectural impact |
+| 21     | Extreme    | High        | Should be split further             |
 
 When estimating, consider three dimensions:
+
 - **Complexity** -- how intricate is the implementation?
 - **Uncertainty** -- how much is unknown?
 - **Effort** -- how much raw work is involved?
 
 ### 4. Sprint Backlog Assembly
 
-1. **Set sprint capacity** = team size x days x velocity factor
-2. **Prioritize stories** using MoSCoW or value/effort matrix
+1. **Set sprint capacity** = team size x days x velocity factor (see [velocity-tracking.md](velocity-tracking.md))
+2. **Prioritize stories** using MoSCoW or value/effort matrix (see [priority-frameworks.md](priority-frameworks.md))
 3. **Check dependencies** -- no story should block another in the same sprint without explicit ordering
 4. **Validate total points** against historical velocity (aim for 80-90% capacity)
 5. **Identify risks** and tag stories with risk labels
@@ -102,7 +101,8 @@ gh issue create \
   --assignee "@me"
 ```
 
-Apply labels systematically:
+Apply labels systematically (see [github-labels.md](github-labels.md) for full color-coded label standard):
+
 - `priority-critical`, `priority-high`, `priority-medium`, `priority-low`
 - `size-S` (1-2), `size-M` (3-5), `size-L` (8-13), `size-XL` (21+)
 - `type-feature`, `type-bug`, `type-chore`, `type-spike`
@@ -110,6 +110,7 @@ Apply labels systematically:
 ### 6. Sprint Retrospective
 
 After each sprint, capture:
+
 1. **What went well** -- practices to continue
 2. **What could improve** -- pain points
 3. **Action items** -- concrete, assigned, time-boxed improvements
@@ -127,28 +128,39 @@ After each sprint, capture:
 
 ## Chaining
 
-| Upstream Skill | Purpose |
-|---------------|---------|
+| Upstream Skill           | Purpose                                      |
+| ------------------------ | -------------------------------------------- |
 | `prd-driven-development` | Generate PRDs that feed into sprint planning |
 
-| Downstream Skill | Purpose |
-|-----------------|---------|
-| `code-review` | Review implementations of sprint stories |
-| `testing-strategy` | Generate test plans from acceptance criteria |
-| `documentation-generator` | Document completed features |
+| Downstream Skill          | Purpose                                      |
+| ------------------------- | -------------------------------------------- |
+| `code-review`             | Review implementations of sprint stories     |
+| `testing-strategy`        | Generate test plans from acceptance criteria |
+| `documentation-generator` | Document completed features                  |
 
 **Typical workflow:**
+
 ```
 prd-driven-development -> sprint-planning -> [implementation] -> code-review -> testing-strategy
 ```
 
+## References
+
+- [story-splitting.md](story-splitting.md) -- 7 patterns for splitting large stories
+- [velocity-tracking.md](velocity-tracking.md) -- Calculating velocity and capacity planning
+- [priority-frameworks.md](priority-frameworks.md) -- MoSCoW method and value/effort matrix
+- [definition-of-done.md](definition-of-done.md) -- DoD checklist for story completion
+- [github-labels.md](github-labels.md) -- Color-coded label standard (priority, size, type)
+- [ceremonies.md](ceremonies.md) -- Sprint ceremony durations and participants
+- [anti-patterns.md](anti-patterns.md) -- Common sprint planning anti-patterns
+
 ## Troubleshooting
 
-| Problem | Solution |
-|---------|----------|
-| Stories are too large (13+ points) | Apply story splitting patterns from REFERENCE.md |
-| Acceptance criteria are vague | Use concrete values; add Given/When/Then structure |
-| Sprint consistently overcommitted | Reduce to 70% of average velocity; track interruptions |
-| Dependencies between stories | Reorder or split; consider vertical slicing |
-| `gh` CLI auth fails | Run `gh auth login` and select correct repository scope |
-| Stories lack testability | Rewrite with observable outcomes; add "Then I should see..." |
+| Problem                            | Solution                                                                     |
+| ---------------------------------- | ---------------------------------------------------------------------------- |
+| Stories are too large (13+ points) | Apply story splitting patterns from [story-splitting.md](story-splitting.md) |
+| Acceptance criteria are vague      | Use concrete values; add Given/When/Then structure                           |
+| Sprint consistently overcommitted  | Reduce to 70% of average velocity; track interruptions                       |
+| Dependencies between stories       | Reorder or split; consider vertical slicing                                  |
+| `gh` CLI auth fails                | Run `gh auth login` and select correct repository scope                      |
+| Stories lack testability           | Rewrite with observable outcomes; add "Then I should see..."                 |

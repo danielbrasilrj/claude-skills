@@ -1,0 +1,227 @@
+# Domain Intelligence — Depillagos App Architecture Decisions
+# Claude reads this before making any technical recommendation.
+
+project:
+  name: 'Depillagos App'
+  description: 'Laser depilation studio app — catalog, loyalty, notifications, walk-in booking via WhatsApp'
+  version: '1.0.0'
+
+platform:
+  targets:
+    - ios
+    - android
+    - web
+  min_versions:
+    ios: '16.0'
+    android_api: 26
+    browsers: ['chrome 90+', 'safari 15+']
+
+framework:
+  primary: 'react-native'
+  version: '0.81'
+  runtime: 'expo'
+  expo_sdk: '54'
+  backend: 'nestjs'
+  backend_version: '10'
+
+language:
+  primary: 'typescript'
+  version: '5.x'
+  strict_mode: true
+
+database:
+  primary: 'postgresql'
+  version: '16'
+  hosting: 'railway'
+  orm: 'typeorm'
+  realtime: false
+  row_level_security: false
+  synchronize_production: false
+  migrations_auto_run: true # main.ts detects and runs pending migrations on startup
+
+state_management:
+  client: 'react-context + hooks'
+  server: 'custom fetch (apps/mobile/src/services/api.ts)'
+  cache: 'in-memory cache-manager (TTL 300s)'
+
+authentication:
+  provider: 'custom JWT + OTP via Twilio'
+  methods:
+    - phone-otp
+  mfa_required: false
+  token_refresh: true
+  jwt_expiration: '15m'
+  refresh_expiration: '7d'
+
+api:
+  style: 'rest'
+  versioning: 'none' # flat routes, no /v1/ prefix
+  naming_convention: 'snake_case'
+  pagination: 'offset' # { data, total, page, limit, totalPages }
+  error_format: 'nestjs-default'
+  validation: 'class-validator + ValidationPipe(whitelist: true)'
+
+approved_libraries:
+  backend:
+    - name: '@nestjs/core'
+      version: '10.x'
+      reason: 'Primary backend framework'
+    - name: 'typeorm'
+      version: '0.3.x'
+      reason: 'ORM — entity-based, migration support'
+    - name: 'class-validator'
+      version: '0.14.x'
+      reason: 'DTO validation via decorators'
+    - name: 'class-transformer'
+      version: '0.5.x'
+      reason: 'DTO serialization'
+    - name: 'helmet'
+      version: '8.x'
+      reason: 'Security headers'
+    - name: 'compression'
+      version: '1.x'
+      reason: 'Response compression'
+    - name: '@nestjs/cache-manager'
+      version: '2.x'
+      reason: 'In-memory caching (no Redis)'
+    - name: '@nestjs/throttler'
+      version: '6.x'
+      reason: 'Rate limiting'
+    - name: '@sentry/nestjs'
+      version: '10.x'
+      reason: 'Error tracking'
+    - name: 'twilio'
+      version: '5.x'
+      reason: 'OTP SMS delivery'
+  mobile:
+    - name: 'expo'
+      version: '~54.x'
+      reason: 'React Native managed workflow'
+    - name: 'react-native-reanimated'
+      version: '~3.x'
+      reason: 'Animations'
+    - name: 'react-native-svg'
+      version: '15.x'
+      reason: 'SVG rendering'
+    - name: '@react-navigation/native'
+      version: '7.x'
+      reason: 'Navigation'
+    - name: '@sentry/react-native'
+      version: '6.x'
+      reason: 'Error tracking (disabled until DSN configured)'
+    - name: 'expo-notifications'
+      version: '~0.31.x'
+      reason: 'Push notifications'
+  testing:
+    - name: 'jest'
+      version: '29.x'
+      reason: 'Unit + integration tests'
+    - name: '@testing-library/react-native'
+      version: '12.x'
+      reason: 'Component testing'
+    - name: 'supertest'
+      version: '7.x'
+      reason: 'API E2E tests'
+    - name: '@testcontainers/postgresql'
+      version: '10.x'
+      reason: 'E2E test database'
+
+forbidden_patterns:
+  - pattern: 'synchronize: true in production'
+    reason: 'Can destroy data — use migrations'
+    alternative: 'TypeORM migrations (auto-run on startup)'
+  - pattern: 'Return raw entities from controllers'
+    reason: 'Leaks internal fields (passwords, tokens)'
+    alternative: 'Use response DTOs or explicit field selection'
+  - pattern: 'EXPO_PUBLIC_* for API URLs'
+    reason: 'Not available during eas update, only eas build'
+    alternative: 'Hardcode in api.ts (__DEV__ check)'
+  - pattern: 'Redis / external cache'
+    reason: 'Budget constraint (<$20/mo)'
+    alternative: 'In-memory cache-manager'
+  - pattern: 'Booking API / date picker / booking history'
+    reason: 'MVP scope — walk-in + WhatsApp only'
+    alternative: 'wa.me deep link for laser; walk-in for everything else'
+  - pattern: 'Multiple locations'
+    reason: 'MVP scope — Araruama only'
+    alternative: 'Single location hardcoded'
+  - pattern: 'Automated notifications / scheduling'
+    reason: 'MVP scope — admin-triggered only'
+    alternative: 'Admin panel send-to-all + smart-push'
+  - pattern: 'echo TODO in CI'
+    reason: 'Placeholder CI steps break trust'
+    alternative: 'Skip the job or implement it fully'
+  - pattern: 'SVG path z without leading space'
+    reason: 'Android react-native-svg Fabric crash (e.g. ...4z)'
+    alternative: 'Always add space before z (e.g. ...4 z)'
+
+deployment:
+  ci_cd: 'github-actions'
+  hosting:
+    web: 'vercel'
+    api: 'railway'
+    mobile_builds: 'eas-build'
+    cdn: 'cloudflare-r2'
+  environments:
+    - name: preview
+      branch: master
+      channel: preview
+    - name: production
+      branch: master
+      channel: production # no branch mapped yet — pending store build
+  auto_deploy:
+    api: 'Railway auto-deploy on push to master'
+    mobile_ota: 'deploy-mobile-ota.yml — EAS OTA to preview channel'
+    web: 'deploy-web.yml — Vercel production'
+    native_build: 'build-mobile-native.yml — EAS native (on native config changes)'
+
+mvp_scope_guards:
+  booking_model: 'walk-in + WhatsApp (laser only)'
+  notifications: 'admin-triggered only, no automation'
+  location: 'single — Araruama'
+  loyalty: 'points + punch card + streaks (demo mode for admin)'
+  auth: 'phone OTP only (Apple/Google accounts pending)'
+
+privacy:
+  applicable_laws:
+    - 'LGPD'
+  data_residency: 'Brazil preferred (Railway region)'
+  user_data_export: true # GET /users/me/export
+  account_deletion: true # DELETE /users/me (anonymize)
+  lgpd_consent_tracking: true
+
+i18n:
+  default_locale: 'pt-BR'
+  supported_locales:
+    - 'pt-BR'
+  framework: 'none (hardcoded PT-BR strings)'
+
+monitoring:
+  error_tracking: 'sentry'
+  analytics: 'none (MVP)'
+  performance: 'none (MVP)'
+
+naming_conventions:
+  files: 'kebab-case (e.g. auth.controller.ts, send-otp.dto.ts)'
+  components: 'PascalCase (e.g. HomeScreen.tsx, ServiceCard.tsx)'
+  hooks: 'camelCase with use prefix (e.g. useAuthGuard.ts)'
+  entities: 'PascalCase class, snake_case columns'
+  tests: '*.spec.ts (unit), *.e2e-spec.ts (e2e)'
+  migrations: 'timestamp-description (e.g. 1700000000000-AddLoyaltyTables.ts)'
+
+file_structure:
+  api: 'apps/api/src/{module}/{module}.controller.ts, .service.ts, .module.ts, dto/'
+  mobile: 'apps/mobile/src/screens/, components/, hooks/, services/'
+  shared: 'packages/shared/src/'
+  tests:
+    api_unit: 'apps/api/src/**/*.spec.ts'
+    api_e2e: 'apps/api/test/*.e2e-spec.ts'
+    mobile: 'apps/mobile/src/**/__tests__/*.test.tsx'
+
+coverage_thresholds:
+  mobile:
+    statements: 79
+    branches: 73
+    functions: 75
+    lines: 79
+  api: 'check apps/api/jest.config.ts for current values'

@@ -1,10 +1,6 @@
 ---
 name: documentation-generator
-description: |
-  Meta-skill that generates documentation for APIs, components, project architecture, and other
-  skills. Covers JSDoc/TypeDoc generation, README creation, API documentation, component docs,
-  and Architecture Decision Records (ADRs). Use when creating project docs, writing ADRs,
-  documenting APIs, generating component documentation, or setting up auto-doc pipelines.
+description: Generates docs for APIs, components, and architecture. Covers JSDoc/TypeDoc, READMEs, and ADRs.
 ---
 
 ## Purpose
@@ -28,33 +24,46 @@ Documentation Generator creates and maintains project documentation using establ
 
 ### 1. Architecture Decision Records (ADRs)
 
-Use the MADR (Markdown ADR) template for all architectural decisions:
+Use the MADR (Markdown ADR) template for all architectural decisions. See [adr-guide.md](adr-guide.md) for full example, storage conventions, and lifecycle management.
 
 ```markdown
 # ADR-NNN: [Decision Title]
 
 ## Status
+
 [Proposed | Accepted | Deprecated | Superseded by ADR-XXX]
 
 ## Context
+
 [What is the issue? What forces are at play?]
 
 ## Decision
+
 [What is the change that we're proposing and/or doing?]
 
 ## Consequences
+
 ### Positive
+
 - [benefit]
+
 ### Negative
+
 - [tradeoff]
+
 ### Neutral
+
 - [side effect]
 
 ## Alternatives Considered
+
 ### [Option A]
+
 - Pros: ...
 - Cons: ...
+
 ### [Option B]
+
 - Pros: ...
 - Cons: ...
 ```
@@ -63,7 +72,8 @@ Store ADRs in `docs/decisions/` with sequential numbering.
 
 ### 2. API Documentation
 
-For each endpoint, document:
+See [api-documentation.md](api-documentation.md) for full REST endpoint template, OpenAPI/Swagger integration, and multi-language examples. For each endpoint, document:
+
 - Method + path
 - Request parameters/body with types
 - Response schema with examples
@@ -72,7 +82,8 @@ For each endpoint, document:
 
 ### 3. Component Documentation
 
-For each component:
+See [component-documentation.md](component-documentation.md) for full module documentation template with usage patterns, testing, and architecture diagrams. For each component:
+
 - Purpose and usage
 - Props/inputs with types and defaults
 - Events/outputs
@@ -80,6 +91,8 @@ For each component:
 - Accessibility notes
 
 ### 4. Auto-Documentation in CI
+
+See [ci-cd-docs.md](ci-cd-docs.md) for full GitHub Actions workflow, pre-commit hooks, and quality checklist.
 
 ```yaml
 # GitHub Actions: generate docs on push to main
@@ -104,17 +117,26 @@ For each component:
 
 ## Chaining
 
-| Chain With | Purpose |
-|---|---|
-| `domain-intelligence` | Document tech stack decisions as ADRs |
-| `api-contract-testing` | Generate docs from OpenAPI specs |
-| `ci-cd-pipeline` | Set up auto-doc generation in CI |
-| `code-review` | Verify documentation is included in PRs |
+| Chain With             | Purpose                                 |
+| ---------------------- | --------------------------------------- |
+| `domain-intelligence`  | Document tech stack decisions as ADRs   |
+| `api-contract-testing` | Generate docs from OpenAPI specs        |
+| `ci-cd-pipeline`       | Set up auto-doc generation in CI        |
+| `code-review`          | Verify documentation is included in PRs |
+
+## References
+
+- [jsdoc-typedoc.md](jsdoc-typedoc.md) -- JSDoc comment format, tags reference, TypeDoc configuration and generation
+- [api-documentation.md](api-documentation.md) -- REST endpoint template, OpenAPI/Swagger integration, multi-language examples
+- [adr-guide.md](adr-guide.md) -- MADR template with full example, storage/naming conventions, ADR lifecycle
+- [readme-template.md](readme-template.md) -- Project README structure with all standard sections
+- [component-documentation.md](component-documentation.md) -- Module/service documentation template with API, testing, architecture
+- [ci-cd-docs.md](ci-cd-docs.md) -- GitHub Actions doc workflow, pre-commit hooks, quality checklist, further reading
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---|---|
-| TypeDoc fails | Check tsconfig paths; ensure exports are public |
-| ADRs getting stale | Include ADR review in sprint retrospectives |
-| Docs out of sync | Add doc generation to CI; fail build on drift |
+| Problem            | Solution                                        |
+| ------------------ | ----------------------------------------------- |
+| TypeDoc fails      | Check tsconfig paths; ensure exports are public |
+| ADRs getting stale | Include ADR review in sprint retrospectives     |
+| Docs out of sync   | Add doc generation to CI; fail build on drift   |

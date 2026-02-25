@@ -1,12 +1,6 @@
 ---
 name: email-marketing
-description: |
-  Creates i18n-ready email marketing sequences: welcome series, appointment reminders,
-  reactivation campaigns, and seasonal promotions. Includes segmentation strategies, subject
-  line A/B testing, and send time optimization. All templates support multilingual output
-  with locale-aware formatting (dates, currency, greetings). Default locales: en, pt-BR.
-  Use when creating email campaigns, setting up automated sequences, or optimizing email
-  marketing for conversion.
+description: i18n-ready email sequences — welcome, reminders, reactivation, seasonal. Segmentation, A/B subjects, send optimization (en, pt-BR).
 ---
 
 ## Purpose
@@ -31,15 +25,19 @@ Email Marketing provides templates and procedures for creating high-converting e
 
 ### 1. Segment Your Audience
 
-| Segment | Criteria | Content Strategy |
-|---|---|---|
-| New users | Signed up in last 7 days | Welcome series, onboarding |
-| Active | Used app in last 30 days | Feature tips, upgrades |
-| At-risk | No activity in 14-30 days | Re-engagement, value reminders |
-| Inactive | No activity in 30+ days | Reactivation, incentives |
-| Power users | Daily usage, high engagement | Loyalty, referral programs |
+See [segmentation.md](segmentation.md) for behavioral, demographic, lifecycle, and RFM segmentation strategies plus personalization patterns.
+
+| Segment     | Criteria                     | Content Strategy               |
+| ----------- | ---------------------------- | ------------------------------ |
+| New users   | Signed up in last 7 days     | Welcome series, onboarding     |
+| Active      | Used app in last 30 days     | Feature tips, upgrades         |
+| At-risk     | No activity in 14-30 days    | Re-engagement, value reminders |
+| Inactive    | No activity in 30+ days      | Reactivation, incentives       |
+| Power users | Daily usage, high engagement | Loyalty, referral programs     |
 
 ### 2. Build Welcome Series
+
+See [email-sequences.md](email-sequences.md) for detailed welcome, nurture, re-engagement, reactivation, and transactional sequence templates.
 
 **Email 1 (Day 0):** Welcome + brand story
 **Email 2 (Day 3):** Educational content / quick wins
@@ -66,6 +64,7 @@ greeting: "Oi {{first_name}},"
 ```
 
 **Locale formatting rules:**
+
 - Dates: `March 15, 2025` (en) → `15 de março de 2025` (pt-BR)
 - Time: `3:45 PM` (en) → `15:45` (pt-BR)
 - Currency: `$49.99` (en) → `R$ 49,99` (pt-BR)
@@ -73,7 +72,10 @@ greeting: "Oi {{first_name}},"
 
 ### 4. A/B Test Subject Lines
 
+See [subject-line-optimization.md](subject-line-optimization.md) for formulas, emoji usage, and A/B testing methodology.
+
 Test one variable at a time:
+
 - Personalization (with name vs without)
 - Length (short < 40 chars vs descriptive)
 - Urgency (deadline vs no deadline)
@@ -99,18 +101,26 @@ Minimum sample: 1,000 per variant. Run for 2-4 hours before selecting winner.
 
 ## Chaining
 
-| Chain With | Purpose |
-|---|---|
-| `conversion-copywriting` | Apply AIDA/PAS to email copy |
-| `ab-test-generator` | Design email experiments |
-| `social-media-content` | Coordinate email + social campaigns |
-| `data-analysis` | Analyze email performance metrics |
+| Chain With               | Purpose                             |
+| ------------------------ | ----------------------------------- |
+| `conversion-copywriting` | Apply AIDA/PAS to email copy        |
+| `ab-test-generator`      | Design email experiments            |
+| `social-media-content`   | Coordinate email + social campaigns |
+| `data-analysis`          | Analyze email performance metrics   |
+
+## References
+
+- [email-sequences.md](email-sequences.md) -- Welcome, nurture, re-engagement, reactivation, and transactional sequence templates
+- [subject-line-optimization.md](subject-line-optimization.md) -- Subject line formulas, best practices, emoji usage, A/B testing
+- [deliverability.md](deliverability.md) -- SPF/DKIM/DMARC setup, list hygiene, spam triggers, sender reputation, IP warming, metrics benchmarks
+- [compliance.md](compliance.md) -- CAN-SPAM and LGPD requirements, double opt-in, unsubscribe best practices
+- [segmentation.md](segmentation.md) -- Behavioral, demographic, lifecycle, RFM segmentation, personalization, preference center
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---|---|
-| Low open rates | Test subject lines; check send time; verify deliverability |
-| High unsubscribe rate | Reduce frequency; improve segmentation; check relevance |
+| Problem                | Solution                                                       |
+| ---------------------- | -------------------------------------------------------------- |
+| Low open rates         | Test subject lines; check send time; verify deliverability     |
+| High unsubscribe rate  | Reduce frequency; improve segmentation; check relevance        |
 | pt-BR formatting wrong | Use Intl APIs for dates/currency; test with real pt-BR content |
-| Emails going to spam | Check SPF/DKIM/DMARC; avoid spam trigger words |
+| Emails going to spam   | Check SPF/DKIM/DMARC; avoid spam trigger words                 |

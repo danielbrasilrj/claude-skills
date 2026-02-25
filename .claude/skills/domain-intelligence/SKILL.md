@@ -1,11 +1,6 @@
 ---
 name: domain-intelligence
-description: |
-  Embeds organizational architecture rules, tech stack decisions, approved libraries, forbidden
-  patterns, and standard operating procedures. Claude reads this skill before making any technical
-  recommendation to ensure alignment with the project's constraints. Use when starting a new project,
-  onboarding Claude to an existing codebase, or whenever technical decisions must respect predefined
-  stack constraints.
+description: Embeds stack decisions, approved libs, forbidden patterns. Read before any technical recommendation.
 user-invocable: false
 ---
 
@@ -64,6 +59,7 @@ Before recommending a specific technology:
 ### 4. Update Process
 
 When making a new architectural decision:
+
 1. Document it in architecture-decisions.yml
 2. Add an ADR using the `documentation-generator` skill
 3. Notify the team of the change
@@ -78,17 +74,17 @@ When making a new architectural decision:
 
 ## Chaining
 
-| Chain With | Purpose |
-|---|---|
-| All technical skills | Read before making any technology recommendation |
-| `documentation-generator` | Generate ADRs for new decisions |
-| `code-review` | Validate code against approved patterns |
-| `ci-cd-pipeline` | Align CI/CD with deployment targets |
+| Chain With                | Purpose                                          |
+| ------------------------- | ------------------------------------------------ |
+| All technical skills      | Read before making any technology recommendation |
+| `documentation-generator` | Generate ADRs for new decisions                  |
+| `code-review`             | Validate code against approved patterns          |
+| `ci-cd-pipeline`          | Align CI/CD with deployment targets              |
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---|---|
-| architecture-decisions.yml not found | Copy template to project root and customize |
-| Conflicting constraints | Flag to user; constraints may need updating |
-| New library needed but not approved | Recommend it with rationale; suggest adding to approved list |
+| Problem                              | Solution                                                     |
+| ------------------------------------ | ------------------------------------------------------------ |
+| architecture-decisions.yml not found | Copy template to project root and customize                  |
+| Conflicting constraints              | Flag to user; constraints may need updating                  |
+| New library needed but not approved  | Recommend it with rationale; suggest adding to approved list |

@@ -1,9 +1,6 @@
 ---
 name: remote-trigger
-description: >
-  Remote automation via Telegram/Slack bots that trigger Claude Code sessions.
-  Covers webhook setup, HMAC-SHA256 verification, secure tunneling with
-  Tailscale or Cloudflare Tunnel, permission allowlisting, and container isolation.
+description: Remote automation via Telegram/Slack bots triggering Claude Code. Webhooks, HMAC verification, secure tunneling.
 ---
 
 # Remote Trigger
@@ -29,15 +26,15 @@ sandboxing execution inside containers.
 
 ## Prerequisites
 
-| Requirement           | Details                                       |
-|-----------------------|-----------------------------------------------|
-| Node.js >= 18        | Webhook handler runtime                       |
-| Python >= 3.10       | Alternative handler runtime                   |
+| Requirement              | Details                                    |
+| ------------------------ | ------------------------------------------ |
+| Node.js >= 18            | Webhook handler runtime                    |
+| Python >= 3.10           | Alternative handler runtime                |
 | Tailscale or cloudflared | Secure tunnel to localhost                 |
-| Docker (optional)    | Container isolation for triggered commands     |
-| Telegram Bot Token   | From @BotFather                                |
-| Slack App credentials| Bot token + signing secret from Slack API      |
-| `claude` CLI         | Installed and authenticated                    |
+| Docker (optional)        | Container isolation for triggered commands |
+| Telegram Bot Token       | From @BotFather                            |
+| Slack App credentials    | Bot token + signing secret from Slack API  |
+| `claude` CLI             | Installed and authenticated                |
 
 ## Procedures
 
@@ -81,8 +78,8 @@ cloudflared tunnel run --url http://127.0.0.1:3400 remote-trigger
 ### 3. Webhook Handler Implementation
 
 The handler receives HTTP requests, verifies authenticity, and dispatches
-commands to Claude Code. See `templates/webhook-handler.md` for the full
-implementation and `REFERENCE.md` for the complete source.
+commands to Claude Code. See [webhook-handler.md](webhook-handler.md) for the
+full implementation (Node.js Express + Python FastAPI).
 
 **Core verification flow:**
 
@@ -90,14 +87,8 @@ implementation and `REFERENCE.md` for the complete source.
 const crypto = require('crypto');
 
 function verifyHMAC(payload, signature, secret) {
-  const expected = crypto
-    .createHmac('sha256', secret)
-    .update(payload, 'utf8')
-    .digest('hex');
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expected)
-  );
+  const expected = crypto.createHmac('sha256', secret).update(payload, 'utf8').digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
 }
 ```
 
@@ -112,18 +103,18 @@ allowed_commands:
     pattern: "^deploy\\s+(staging|production)$"
     requires_approval: true
     allowed_users:
-      - "U12345"   # Slack user ID
-      - "87654321" # Telegram user ID
+      - 'U12345' # Slack user ID
+      - '87654321' # Telegram user ID
 
   - name: run-tests
     pattern: "^test\\s+\\S+$"
     requires_approval: false
-    allowed_users: ["*"]
+    allowed_users: ['*']
 
   - name: status
-    pattern: "^status$"
+    pattern: '^status$'
     requires_approval: false
-    allowed_users: ["*"]
+    allowed_users: ['*']
 
 denied_patterns:
   - "rm\\s+-rf"
@@ -149,6 +140,7 @@ docker run --rm \
 ```
 
 Key isolation flags:
+
 - `--network=none`: No network access from container
 - `--read-only`: Immutable filesystem
 - `--memory` / `--cpus`: Resource limits
@@ -175,16 +167,16 @@ See `templates/slack-bot-setup.md` for the complete guide. Summary:
 
 ## Templates
 
-| Template                         | Purpose                                 |
-|----------------------------------|-----------------------------------------|
-| `templates/telegram-bot-setup.md`| Full Telegram bot configuration guide   |
-| `templates/slack-bot-setup.md`   | Full Slack app configuration guide      |
-| `templates/webhook-handler.md`   | Generic webhook handler implementation  |
+| Template                          | Purpose                                |
+| --------------------------------- | -------------------------------------- |
+| `templates/telegram-bot-setup.md` | Full Telegram bot configuration guide  |
+| `templates/slack-bot-setup.md`    | Full Slack app configuration guide     |
+| `templates/webhook-handler.md`    | Generic webhook handler implementation |
 
 ## Examples
 
-| Example                              | Description                         |
-|--------------------------------------|-------------------------------------|
+| Example                              | Description                            |
+| ------------------------------------ | -------------------------------------- |
 | `examples/deploy-trigger-example.md` | End-to-end deploy trigger via Telegram |
 
 ## Chaining
@@ -194,14 +186,27 @@ See `templates/slack-bot-setup.md` for the complete guide. Summary:
 - **security-review**: Audit the webhook handler for vulnerabilities.
 - **notification-system**: Send push notifications on trigger completion.
 
+## References
+
+| File                                           | Topic                                      |
+| ---------------------------------------------- | ------------------------------------------ |
+| [webhook-handler.md](webhook-handler.md)       | Full webhook handler (Node.js + Python)    |
+| [hmac-verification.md](hmac-verification.md)   | HMAC-SHA256 verification deep dive         |
+| [tunnel-config.md](tunnel-config.md)           | Cloudflare, Tailscale, ngrok tunnel setup  |
+| [platform-webhooks.md](platform-webhooks.md)   | Telegram and Slack webhook payload formats |
+| [container-runner.md](container-runner.md)     | Docker container runner Dockerfile         |
+| [systemd-services.md](systemd-services.md)     | Systemd service units for handler + tunnel |
+| [monitoring.md](monitoring.md)                 | Health checks, logging, metrics            |
+| [security-checklist.md](security-checklist.md) | Security hardening checklist               |
+
 ## Troubleshooting
 
-| Issue                          | Resolution                                    |
-|--------------------------------|-----------------------------------------------|
-| Webhook not receiving requests | Verify tunnel is running; check `cloudflared tunnel info` or Tailscale status. |
-| HMAC verification fails        | Ensure raw body is used (not parsed JSON). Check secret encoding matches. |
-| Telegram webhook 401           | Token mismatch. Re-register webhook with correct bot token. |
-| Slack challenge fails          | Handler must respond to `url_verification` with the challenge value. |
-| Container command hangs        | Add `--timeout` flag to Docker run. Check resource limits. |
-| Permission denied              | User ID not in allowlist. Verify IDs match platform format. |
-| Claude CLI not found in container | Ensure `claude` is installed in the Docker image. Mount the binary if needed. |
+| Issue                             | Resolution                                                                     |
+| --------------------------------- | ------------------------------------------------------------------------------ |
+| Webhook not receiving requests    | Verify tunnel is running; check `cloudflared tunnel info` or Tailscale status. |
+| HMAC verification fails           | Ensure raw body is used (not parsed JSON). Check secret encoding matches.      |
+| Telegram webhook 401              | Token mismatch. Re-register webhook with correct bot token.                    |
+| Slack challenge fails             | Handler must respond to `url_verification` with the challenge value.           |
+| Container command hangs           | Add `--timeout` flag to Docker run. Check resource limits.                     |
+| Permission denied                 | User ID not in allowlist. Verify IDs match platform format.                    |
+| Claude CLI not found in container | Ensure `claude` is installed in the Docker image. Mount the binary if needed.  |

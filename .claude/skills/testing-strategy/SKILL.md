@@ -1,9 +1,6 @@
 ---
 name: testing-strategy
-description: >
-  Design and implement comprehensive testing strategies across unit, integration,
-  and E2E layers. Framework-agnostic guidance with coverage thresholds, risk-based
-  prioritization, and tooling recommendations for web and mobile projects.
+description: Testing strategies across unit, integration, and E2E layers. Coverage thresholds, risk-based prioritization, tooling recommendations.
 ---
 
 # Testing Strategy
@@ -47,23 +44,25 @@ Apply the testing pyramid to distribute effort:
 
 ### 2. Select the Right Framework
 
-| Scenario | Recommended | Why |
-|---|---|---|
-| Vite-based project | **Vitest** | 4x faster, native ESM, shared Vite config |
-| React Native | **Jest** | Built-in RN support, mature ecosystem |
-| Web E2E | **Playwright** | Multi-browser, auto-wait, trace viewer |
-| Mobile E2E | **Maestro** | YAML-based, visual assertions, CI-friendly |
-| API mocking | **MSW** | Network-level interception, works in browser + Node |
-| Legacy CJS project | **Jest** | Broadest CJS compatibility |
+See [framework-comparison.md](framework-comparison.md) for detailed feature-by-feature comparisons.
+
+| Scenario           | Recommended    | Why                                                 |
+| ------------------ | -------------- | --------------------------------------------------- |
+| Vite-based project | **Vitest**     | 4x faster, native ESM, shared Vite config           |
+| React Native       | **Jest**       | Built-in RN support, mature ecosystem               |
+| Web E2E            | **Playwright** | Multi-browser, auto-wait, trace viewer              |
+| Mobile E2E         | **Maestro**    | YAML-based, visual assertions, CI-friendly          |
+| API mocking        | **MSW**        | Network-level interception, works in browser + Node |
+| Legacy CJS project | **Jest**       | Broadest CJS compatibility                          |
 
 ### 3. Apply the Risk-Based Decision Matrix
 
 Prioritize testing by combining **impact** and **change frequency**:
 
-| | Low Change Frequency | High Change Frequency |
-|---|---|---|
-| **High Impact** | Integration tests | Unit + Integration + E2E |
-| **Low Impact** | Minimal / smoke tests | Unit tests |
+|                 | Low Change Frequency  | High Change Frequency    |
+| --------------- | --------------------- | ------------------------ |
+| **High Impact** | Integration tests     | Unit + Integration + E2E |
+| **Low Impact**  | Minimal / smoke tests | Unit tests               |
 
 See `templates/what-to-test-matrix.md` for the full decision framework.
 
@@ -71,14 +70,14 @@ See `templates/what-to-test-matrix.md` for the full decision framework.
 
 Recommended minimums (adjust per project maturity):
 
-| Metric | New Project | Mature Project | Critical Path |
-|---|---|---|---|
-| Statements | 70% | 80% | 95% |
-| Branches | 65% | 75% | 90% |
-| Functions | 70% | 80% | 95% |
-| Lines | 70% | 80% | 95% |
+| Metric     | New Project | Mature Project | Critical Path |
+| ---------- | ----------- | -------------- | ------------- |
+| Statements | 70%         | 80%            | 95%           |
+| Branches   | 65%         | 75%            | 90%           |
+| Functions  | 70%         | 80%            | 95%           |
+| Lines      | 70%         | 80%            | 95%           |
 
-**CI gate rule**: Coverage must not decrease on any PR. Use `--coverage.thresholds` flags. See `templates/coverage-config.md` for ready-to-use configs.
+**CI gate rule**: Coverage must not decrease on any PR. Use `--coverage.thresholds` flags. See `templates/coverage-config.md` for ready-to-use configs. See [coverage-analysis.md](coverage-analysis.md) for analysis tips and performance testing integration.
 
 ### 5. Structure Test Files
 
@@ -107,7 +106,7 @@ See `templates/test-file-template.md` for the full template with setup/teardown 
 
 ### 6. Mock External Dependencies
 
-Use MSW for network mocking (preferred over manual mocks):
+Use MSW for network mocking (preferred over manual mocks). See [msw-patterns.md](msw-patterns.md) for advanced handler patterns and browser integration.
 
 ```typescript
 import { http, HttpResponse } from 'msw';
@@ -116,7 +115,7 @@ import { setupServer } from 'msw/node';
 const server = setupServer(
   http.get('/api/users/:id', ({ params }) => {
     return HttpResponse.json({ id: params.id, name: 'Test User' });
-  })
+  }),
 );
 
 beforeAll(() => server.listen());
@@ -125,6 +124,7 @@ afterAll(() => server.close());
 ```
 
 **Rules for mocking**:
+
 - Mock at boundaries (network, filesystem, time), not internal modules
 - Never mock what you do not own unless wrapping it first
 - Prefer dependency injection over module mocking
@@ -133,6 +133,7 @@ afterAll(() => server.close());
 ### 7. Write E2E Tests
 
 **Playwright (web)**:
+
 ```typescript
 test('user can complete checkout', async ({ page }) => {
   await page.goto('/products');
@@ -144,14 +145,15 @@ test('user can complete checkout', async ({ page }) => {
 ```
 
 **Maestro (mobile)**:
+
 ```yaml
 appId: com.example.app
 ---
 - launchApp
-- tapOn: "Add to cart"
-- tapOn: "Cart"
-- tapOn: "Checkout"
-- assertVisible: "Order confirmed"
+- tapOn: 'Add to cart'
+- tapOn: 'Cart'
+- tapOn: 'Checkout'
+- assertVisible: 'Order confirmed'
 ```
 
 ### 8. Integrate into CI
@@ -191,14 +193,22 @@ Run unit tests first (fast feedback), then integration, then E2E.
 - Combine with **accessibility-audit** to add a11y assertions in E2E tests
 - Feed results into **performance-optimization** when tests reveal perf regressions
 
+## References
+
+- [framework-comparison.md](framework-comparison.md) -- Vitest vs Jest, Playwright vs Cypress, Maestro deep dive
+- [msw-patterns.md](msw-patterns.md) -- MSW request handler patterns and browser integration
+- [testing-patterns.md](testing-patterns.md) -- Unit, integration, and E2E test patterns with code examples
+- [test-data-management.md](test-data-management.md) -- Factories, seed scripts for E2E
+- [coverage-analysis.md](coverage-analysis.md) -- Coverage tips and performance testing integration
+
 ## Troubleshooting
 
-| Problem | Cause | Fix |
-|---|---|---|
-| Tests pass locally, fail in CI | Env differences (timezone, locale, deps) | Pin Node version, use `--forceExit`, check env vars |
-| Flaky E2E tests | Race conditions, animations | Use Playwright auto-wait, add `waitFor`, disable animations in test mode |
-| Coverage not increasing | Testing implementation, not behavior | Rewrite tests to cover branches and edge cases |
-| MSW not intercepting | Handler not matching request URL | Log unhandled requests with `onUnhandledRequest: 'warn'` |
-| Vitest slow on large project | Not using workspace mode | Split into Vitest workspaces, run in parallel |
-| Jest ESM errors | CJS/ESM mismatch | Add `transformIgnorePatterns`, or migrate to Vitest |
-| Maestro flaky on CI | Emulator boot timing | Add `- waitForAnimationToEnd` and increase timeouts |
+| Problem                        | Cause                                    | Fix                                                                      |
+| ------------------------------ | ---------------------------------------- | ------------------------------------------------------------------------ |
+| Tests pass locally, fail in CI | Env differences (timezone, locale, deps) | Pin Node version, use `--forceExit`, check env vars                      |
+| Flaky E2E tests                | Race conditions, animations              | Use Playwright auto-wait, add `waitFor`, disable animations in test mode |
+| Coverage not increasing        | Testing implementation, not behavior     | Rewrite tests to cover branches and edge cases                           |
+| MSW not intercepting           | Handler not matching request URL         | Log unhandled requests with `onUnhandledRequest: 'warn'`                 |
+| Vitest slow on large project   | Not using workspace mode                 | Split into Vitest workspaces, run in parallel                            |
+| Jest ESM errors                | CJS/ESM mismatch                         | Add `transformIgnorePatterns`, or migrate to Vitest                      |
+| Maestro flaky on CI            | Emulator boot timing                     | Add `- waitForAnimationToEnd` and increase timeouts                      |

@@ -57,9 +57,9 @@ Query 2: [Alternative phrasing or related angle]
 Query 3: [Specific sub-topic]
 ```
 
-**Step 2b: Perplexity Reasoning** -- Ask user permission first. Use `mcp__perplexity__reason` for complex multi-step analysis, or `mcp__perplexity__search` for quick factual lookups.
+**Step 2b: Perplexity Reasoning** -- Ask user permission first. Use `mcp__perplexity__reason` for complex multi-step analysis, or `mcp__perplexity__search` for quick factual lookups. See [perplexity-guide.md](perplexity-guide.md) for tool selection.
 
-**Step 2c: Crawl4AI Structured Extraction** -- For pages needing structured data extraction, use the Crawl4AI script. See REFERENCE.md for full API details.
+**Step 2c: Crawl4AI Structured Extraction** -- For pages needing structured data extraction, use the Crawl4AI script. See [crawl4ai-api.md](crawl4ai-api.md) for full API details.
 
 ```python
 from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
@@ -89,7 +89,10 @@ async with AsyncWebCrawler() as crawler:
 
 ### 3. Source Validation
 
+See [research-methodology.md](research-methodology.md) for credibility scoring, depth levels, competitive analysis framework, and SWOT template.
+
 For each source, verify:
+
 - **Recency**: Is the information current enough for the research question?
 - **Authority**: Is the source reputable? (official docs, major publications, known experts)
 - **Consistency**: Do multiple sources corroborate the claim?
@@ -123,20 +126,26 @@ python scripts/format-crawl4ai-output.py --input raw_crawl.json --output formatt
 
 ## Chaining
 
-| Chain With | Purpose |
-|---|---|
-| `domain-intelligence` | Check organizational constraints before recommending tools |
-| `data-analysis` | Quantitative analysis of research data (pricing, metrics) |
-| `prd-driven-development` | Feed research into product requirements |
-| `documentation-generator` | Turn research into polished documentation |
+| Chain With                | Purpose                                                    |
+| ------------------------- | ---------------------------------------------------------- |
+| `domain-intelligence`     | Check organizational constraints before recommending tools |
+| `data-analysis`           | Quantitative analysis of research data (pricing, metrics)  |
+| `prd-driven-development`  | Feed research into product requirements                    |
+| `documentation-generator` | Turn research into polished documentation                  |
+
+## References
+
+- [crawl4ai-api.md](crawl4ai-api.md) -- AsyncWebCrawler, CrawlResult, extraction strategies, multi-URL and session-based crawling
+- [research-methodology.md](research-methodology.md) -- Source credibility scoring, depth levels, competitive analysis framework, SWOT, output formatting
+- [perplexity-guide.md](perplexity-guide.md) -- Perplexity MCP tool selection (search vs reason vs deep_research)
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---|---|
-| Crawl4AI returns `result.success = False` | Check URL accessibility; try adding `wait_for` parameter for JS-heavy pages; verify CSS selectors |
-| Perplexity rate limited | Fall back to WebSearch + WebFetch; wait and retry |
-| WebSearch returns stale results | Add current year to query; use date-specific search terms |
-| Extraction schema returns empty | Inspect page HTML to verify selectors; try broader `baseSelector`; use `LLMExtractionStrategy` as fallback (costs tokens) |
-| Too many sources to process | Prioritize by authority score; batch Crawl4AI calls; summarize incrementally |
-| Conflicting data across sources | Flag in report with confidence levels; prefer primary sources over aggregators |
+| Problem                                   | Solution                                                                                                                  |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Crawl4AI returns `result.success = False` | Check URL accessibility; try adding `wait_for` parameter for JS-heavy pages; verify CSS selectors                         |
+| Perplexity rate limited                   | Fall back to WebSearch + WebFetch; wait and retry                                                                         |
+| WebSearch returns stale results           | Add current year to query; use date-specific search terms                                                                 |
+| Extraction schema returns empty           | Inspect page HTML to verify selectors; try broader `baseSelector`; use `LLMExtractionStrategy` as fallback (costs tokens) |
+| Too many sources to process               | Prioritize by authority score; batch Crawl4AI calls; summarize incrementally                                              |
+| Conflicting data across sources           | Flag in report with confidence levels; prefer primary sources over aggregators                                            |

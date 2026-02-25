@@ -1,12 +1,6 @@
 ---
 name: seo-local
-description: |
-  Local SEO optimization skill. Covers Google Business Profile optimization, local keyword
-  research, review response templates, citation building, and hreflang implementation for
-  multilingual sites. Market-agnostic with configurable locale and target market. Templates
-  support multi-language output (default: en, pt-BR). Use when optimizing local search
-  presence, managing Google Business Profile, responding to reviews, or implementing
-  multilingual SEO.
+description: Local SEO — Google Business Profile, local keywords, review responses, citations, hreflang. i18n (en, pt-BR).
 ---
 
 ## Purpose
@@ -32,9 +26,10 @@ SEO Local provides procedures for optimizing local search visibility across any 
 
 ### 1. Google Business Profile Optimization
 
-Complete every field — incomplete profiles let Google fill gaps with AI-generated content you don't control.
+Complete every field -- incomplete profiles let Google fill gaps with AI-generated content you don't control. See [gbp-optimization.md](gbp-optimization.md) for the full deep dive.
 
 **Must-have fields:**
+
 - [ ] Business name (exact legal name, no keyword stuffing)
 - [ ] Primary + secondary categories (be specific)
 - [ ] Address and service area
@@ -47,7 +42,8 @@ Complete every field — incomplete profiles let Google fill gaps with AI-genera
 
 ### 2. NAP Consistency Audit
 
-Name, Address, Phone must be identical across all listings:
+Name, Address, Phone must be identical across all listings. See [nap-consistency.md](nap-consistency.md) for audit checklist and common issues.
+
 - Google Business Profile
 - Apple Maps / Yelp / industry directories
 - Website footer and contact page
@@ -69,7 +65,7 @@ Target conversational long-tail keywords with geographic modifiers.
 
 ### 4. Review Management
 
-**Respond to ALL reviews within 24-48 hours.**
+**Respond to ALL reviews within 24-48 hours.** See [review-management.md](review-management.md) for volume strategy, templates (en + pt-BR), and keyword optimization.
 
 ```yaml
 # Positive Review Response
@@ -95,7 +91,20 @@ template: "{{name}}, lamentamos pela sua experiência. Levamos isso a sério e g
 <link rel="alternate" hreflang="x-default" href="https://example.com/" />
 ```
 
-Rules: Tags must be bidirectional. Use correct ISO codes (`en-GB` not `en-UK`). One language per page.
+Rules: Tags must be bidirectional. Use correct ISO codes (`en-GB` not `en-UK`). One language per page. See [hreflang-implementation.md](hreflang-implementation.md) for syntax, methods (HTML/sitemap/headers), and common mistakes.
+
+## References
+
+| File                                                     | Topic                                                   |
+| -------------------------------------------------------- | ------------------------------------------------------- |
+| [gbp-optimization.md](gbp-optimization.md)               | GBP deep dive: categories, photos, services, posts, Q&A |
+| [schema-markup.md](schema-markup.md)                     | LocalBusiness, FAQ, multi-location JSON-LD              |
+| [nap-consistency.md](nap-consistency.md)                 | NAP audit checklist and common inconsistencies          |
+| [citation-building.md](citation-building.md)             | Tier 1/2 citations, quality vs quantity                 |
+| [review-management.md](review-management.md)             | Review strategy, response templates (en + pt-BR)        |
+| [brazil-local-seo.md](brazil-local-seo.md)               | Brazilian directories, keywords, Reclame Aqui           |
+| [hreflang-implementation.md](hreflang-implementation.md) | Hreflang syntax, methods, validation                    |
+| [local-seo-audit.md](local-seo-audit.md)                 | Audit workflow, tools, advanced topics                  |
 
 ## Templates
 
@@ -109,18 +118,18 @@ Rules: Tags must be bidirectional. Use correct ISO codes (`en-GB` not `en-UK`). 
 
 ## Chaining
 
-| Chain With | Purpose |
-|---|---|
-| `conversion-copywriting` | Optimize GBP description and posts |
-| `social-media-content` | Coordinate local content across channels |
-| `deep-research` | Research local competitors |
-| `domain-intelligence` | Check target market and locale config |
+| Chain With               | Purpose                                  |
+| ------------------------ | ---------------------------------------- |
+| `conversion-copywriting` | Optimize GBP description and posts       |
+| `social-media-content`   | Coordinate local content across channels |
+| `deep-research`          | Research local competitors               |
+| `domain-intelligence`    | Check target market and locale config    |
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---|---|
-| GBP listing suspended | Check for policy violations; verify business legitimacy |
-| Low review volume | Implement systematic review request after positive interactions |
-| Hreflang not working | Verify bidirectional tags; check for non-reciprocal links |
-| NAP inconsistencies | Audit all directories; use a citation management tool |
+| Problem               | Solution                                                        |
+| --------------------- | --------------------------------------------------------------- |
+| GBP listing suspended | Check for policy violations; verify business legitimacy         |
+| Low review volume     | Implement systematic review request after positive interactions |
+| Hreflang not working  | Verify bidirectional tags; check for non-reciprocal links       |
+| NAP inconsistencies   | Audit all directories; use a citation management tool           |

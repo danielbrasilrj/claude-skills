@@ -1,11 +1,6 @@
 ---
 name: database-ops
-description: |
-  Safe database operation procedures for any backend (Supabase, Firebase, PostgreSQL, MongoDB).
-  Covers migration scripts, backup procedures, security rules/RLS review, and indexing optimization.
-  CRITICAL: Never runs destructive operations without explicit user confirmation and backup
-  verification. Use when writing migrations, reviewing database security, optimizing queries,
-  managing backups, or setting up database infrastructure.
+description: Safe database operations — migrations, backups, RLS review, index optimization. Never destructive without confirmation.
 ---
 
 ## Purpose
@@ -32,6 +27,7 @@ Database Ops provides safe, structured procedures for all database operations. I
 ### 1. Safety Protocol (ALWAYS FOLLOW)
 
 **Before ANY destructive operation:**
+
 1. Verify you have a recent backup
 2. Test the operation on a non-production environment first
 3. Get explicit user confirmation with a description of what will change
@@ -50,7 +46,7 @@ Proceed? [Requires explicit user confirmation]
 
 ### 2. Migration Workflow
 
-Every migration follows the up/down pattern:
+Every migration follows the up/down pattern. See [migration-patterns.md](migration-patterns.md) for detailed examples including zero-downtime migrations and safe column/constraint additions.
 
 ```sql
 -- UP: Apply migration
@@ -69,6 +65,7 @@ COMMIT;
 ```
 
 **Migration checklist:**
+
 - [ ] Both UP and DOWN scripts written and tested
 - [ ] Full backup taken before running
 - [ ] Tested on staging first
@@ -78,7 +75,10 @@ COMMIT;
 
 ### 3. Security Rules Review
 
+See [platform-guides.md](platform-guides.md) for full RLS patterns, Prisma/Drizzle schemas, and Firebase security rules.
+
 **Supabase (RLS):**
+
 - [ ] RLS enabled on ALL tables containing user data
 - [ ] `anon` key only used on client (safe with RLS)
 - [ ] `service_role` key NEVER exposed to client
@@ -86,12 +86,15 @@ COMMIT;
 - [ ] No policies with joins (use arrays/IN instead)
 
 **Firebase:**
+
 - [ ] Test mode REMOVED before production (the #1 breach cause)
 - [ ] Rules validate authentication state
 - [ ] Rules validate data structure and types
 - [ ] Rules enforce authorization (user can only access own data)
 
 ### 4. Indexing Optimization
+
+See [index-optimization.md](index-optimization.md) for index types (B-tree, GIN, GiST, partial, composite), maintenance queries, and performance analysis.
 
 ```sql
 -- Find slow queries (PostgreSQL)
@@ -108,6 +111,7 @@ CREATE INDEX CONCURRENTLY idx_users_email ON users(email);
 ```
 
 **Index decision guide:**
+
 - Add index if: column appears in WHERE, JOIN, or ORDER BY frequently
 - Skip index if: table has < 1000 rows, column has low cardinality
 - Always index: foreign keys, RLS policy columns
@@ -118,7 +122,7 @@ CREATE INDEX CONCURRENTLY idx_users_email ON users(email);
 - **2** different storage media
 - **1** offsite/different cloud region
 
-Test restores regularly — a backup that has never been restored is not a backup.
+Test restores regularly — a backup that has never been restored is not a backup. See [backup-procedures.md](backup-procedures.md) for pg_dump/PITR commands, verification scripts, and emergency rollback procedures.
 
 ## Templates
 
@@ -131,18 +135,27 @@ Test restores regularly — a backup that has never been restored is not a backu
 
 ## Chaining
 
-| Chain With | Purpose |
-|---|---|
-| `domain-intelligence` | Determine which database is in use |
-| `security-review` | Full security audit including database layer |
-| `performance-optimization` | Query optimization and profiling |
-| `ci-cd-pipeline` | Automate migrations in deployment pipeline |
+| Chain With                 | Purpose                                      |
+| -------------------------- | -------------------------------------------- |
+| `domain-intelligence`      | Determine which database is in use           |
+| `security-review`          | Full security audit including database layer |
+| `performance-optimization` | Query optimization and profiling             |
+| `ci-cd-pipeline`           | Automate migrations in deployment pipeline   |
+
+## References
+
+- [migration-patterns.md](migration-patterns.md) -- Up/down migrations, zero-downtime patterns, safe alterations
+- [backup-procedures.md](backup-procedures.md) -- pg_dump/PITR, Supabase backup, verification scripts, emergency rollback
+- [index-optimization.md](index-optimization.md) -- Index types, maintenance queries, query performance analysis
+- [connection-pooling.md](connection-pooling.md) -- PgBouncer, Prisma/Drizzle pool config, when to use pooled vs direct
+- [platform-guides.md](platform-guides.md) -- Supabase RLS, Prisma, Drizzle, Firebase Firestore patterns
+- [dangerous-operations.md](dangerous-operations.md) -- Pre-flight checklists, safe deletion, cascade prevention, transaction timeouts
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---|---|
-| Migration fails halfway | Use transactions; run DOWN script to rollback |
-| RLS policy too slow | Index all columns referenced in policies; avoid joins in policies |
-| Firebase rules reject valid requests | Test in Rules Playground; check auth token claims |
-| Backup restore fails | Test restores in non-prod regularly; verify backup integrity |
+| Problem                              | Solution                                                          |
+| ------------------------------------ | ----------------------------------------------------------------- |
+| Migration fails halfway              | Use transactions; run DOWN script to rollback                     |
+| RLS policy too slow                  | Index all columns referenced in policies; avoid joins in policies |
+| Firebase rules reject valid requests | Test in Rules Playground; check auth token claims                 |
+| Backup restore fails                 | Test restores in non-prod regularly; verify backup integrity      |

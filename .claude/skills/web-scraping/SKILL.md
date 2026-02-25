@@ -1,11 +1,6 @@
 ---
 name: web-scraping
-description: |
-  Crawl4AI integration skill for structured web scraping. Covers setting up crawlers, parsing
-  structured data, respecting robots.txt, rate limiting, and storing results. Includes
-  configurable scraping profiles for different verticals (SaaS, marketplaces, e-commerce).
-  Use when extracting structured data from websites, scraping competitor information,
-  building data pipelines from web sources, or setting up recurring web crawls.
+description: Structured web scraping with Crawl4AI — crawlers, data parsing, robots.txt, rate limiting, scraping profiles.
 ---
 
 ## Purpose
@@ -32,6 +27,7 @@ Web Scraping provides structured procedures for extracting data from websites us
 ### 1. Compliance Check (ALWAYS FIRST)
 
 Before scraping any site:
+
 1. Check `robots.txt`: `curl https://example.com/robots.txt`
 2. Respect `Crawl-delay` directives
 3. Check Terms of Service for scraping restrictions
@@ -39,7 +35,10 @@ Before scraping any site:
 
 ### 2. Choose Extraction Strategy
 
+See [extraction-strategies.md](extraction-strategies.md) for detailed schemas, field types, pitfalls, and LLM cost optimization.
+
 **Tier 1: JsonCssExtractionStrategy (FREE — try first)**
+
 ```python
 from crawl4ai.extraction_strategy import JsonCssExtractionStrategy
 
@@ -56,12 +55,14 @@ strategy = JsonCssExtractionStrategy(schema)
 ```
 
 **Tier 2: RegexExtractionStrategy (FREE — for specific patterns)**
+
 ```python
 from crawl4ai.extraction_strategy import RegexExtractionStrategy
 strategy = RegexExtractionStrategy(patterns=[r'\$[\d,]+\.?\d*'])
 ```
 
 **Tier 3: LLMExtractionStrategy (COSTS TOKENS — last resort)**
+
 ```python
 from crawl4ai.extraction_strategy import LLMExtractionStrategy
 from pydantic import BaseModel
@@ -80,6 +81,8 @@ strategy = LLMExtractionStrategy(
 ```
 
 ### 3. Execute Crawl
+
+See [crawl4ai-config.md](crawl4ai-config.md) for advanced configuration options, cache modes, and wait strategies.
 
 ```python
 from crawl4ai import AsyncWebCrawler, CrawlerRunConfig, CacheMode
@@ -101,6 +104,8 @@ async with AsyncWebCrawler() as crawler:
 
 ### 4. Rate Limiting
 
+See [rate-limiting.md](rate-limiting.md) for advanced throttling, recommended delays, and robots.txt compliance.
+
 ```python
 import asyncio
 
@@ -113,6 +118,7 @@ for url in urls:
 ### 5. Store Results
 
 Save as structured JSON for downstream processing:
+
 ```python
 import json
 with open("results.json", "w") as f:
@@ -130,18 +136,27 @@ with open("results.json", "w") as f:
 
 ## Chaining
 
-| Chain With | Purpose |
-|---|---|
-| `deep-research` | Feed scraped data into research reports |
-| `data-analysis` | Analyze scraped datasets |
-| `ab-test-generator` | Use competitor data to inform experiments |
-| `domain-intelligence` | Check compliance requirements |
+| Chain With            | Purpose                                   |
+| --------------------- | ----------------------------------------- |
+| `deep-research`       | Feed scraped data into research reports   |
+| `data-analysis`       | Analyze scraped datasets                  |
+| `ab-test-generator`   | Use competitor data to inform experiments |
+| `domain-intelligence` | Check compliance requirements             |
+
+## References
+
+- [crawl4ai-config.md](crawl4ai-config.md) -- AsyncWebCrawler config options, cache modes, wait strategies
+- [extraction-strategies.md](extraction-strategies.md) -- Tier 1/2/3 strategies with schemas, pitfalls, LLM cost optimization
+- [rate-limiting.md](rate-limiting.md) -- Throttling methods, recommended delays, robots.txt compliance
+- [proxy-rotation.md](proxy-rotation.md) -- Proxy setup, services comparison, user agent rotation
+- [data-cleaning.md](data-cleaning.md) -- Text/price/date cleaning, Pydantic validation
+- [storage-options.md](storage-options.md) -- JSON, CSV, SQLite storage patterns
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---|---|
-| Empty extraction results | Inspect HTML; verify CSS selectors; try broader baseSelector |
-| JS content not loading | Add `wait_for` parameter; ensure Playwright is installed |
-| Rate limited / blocked | Increase delay; rotate user agents; respect robots.txt |
-| LLM extraction too expensive | Try CSS strategy first; reduce chunk size |
+| Problem                      | Solution                                                     |
+| ---------------------------- | ------------------------------------------------------------ |
+| Empty extraction results     | Inspect HTML; verify CSS selectors; try broader baseSelector |
+| JS content not loading       | Add `wait_for` parameter; ensure Playwright is installed     |
+| Rate limited / blocked       | Increase delay; rotate user agents; respect robots.txt       |
+| LLM extraction too expensive | Try CSS strategy first; reduce chunk size                    |
