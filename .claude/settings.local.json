@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(claude mcp add notebooklm npx notebooklm-mcp@latest)",
+      "Bash(git -C /Users/danielcarmo/Env/Projects/personal/claude_skills/claude_skills rev-parse:*)",
+      "mcp__notebooklm__list_notebooks",
+      "Bash(chmod:*)",
+      "Bash(grep:*)",
+      "Bash(python3:*)",
+      "Bash(git -C /Users/danielcarmo/Env/Projects/personal/claude_skills/claude_skills status)",
+      "Bash(git init:*)",
+      "Bash(git branch:*)",
+      "Bash(git -C /Users/danielcarmo/Env/Projects/personal/claude_skills/claude_skills status -u)",
+      "Bash(git -C /Users/danielcarmo/Env/Projects/personal/claude_skills/claude_skills log --oneline -5)",
+      "Bash(git -C /Users/danielcarmo/Env/Projects/personal/claude_skills/claude_skills add .gitignore CLAUDE.md README.md LICENSE CHANGELOG.md templates/ tools/ .claude/skills/)",
+      "Bash(git -C:*)",
+      "Bash(gh auth status:*)",
+      "Bash(gh repo create:*)",
+      "WebFetch(domain:forum.homeexchange.com)",
+      "Bash(find:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_network_requests",
+      "mcp__playwright__browser_close",
+      "Bash(git -C /Users/danielcarmo/Env/Projects/personal/claude_skills status)",
+      "Bash(git -C /Users/danielcarmo/Env/Projects/personal/claude_skills diff)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "notebooklm",
+    "perplexity"
+  ]
+}
